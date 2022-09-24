@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bootdang.system.mapper.MenuMapper">
+
+    <resultMap id="menu_user" type="com.bootdang.system.entity.Menu">
+        <id property="menuId" column="menu_id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="parentid" column="parentid" jdbcType="INTEGER"/>
+        <result property="createuserid" column="createuserid" jdbcType="INTEGER"/>
+        <result property="icon" column="icon" jdbcType="VARCHAR"/>
+        <result property="orderNum" column="order_num" jdbcType="INTEGER"/>
+        <result property="createtime" column="createtime" jdbcType="TIMESTAMP"/>
+        <result property="updatetime" column="updatetime" jdbcType="TIMESTAMP"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="url" column="url" jdbcType="VARCHAR"/>
+        <association property="user"  javaType="com.bootdang.system.entity.User">
+            <result property="username" jdbcType="VARCHAR" column="username"/>
+        </association>
+    </resultMap>
+    <select id="selectMenuAll" resultMap="menu_user">
+        select m.*,s.username from sys_menu as m left join sys_user as s on m.createuserid=s.user_id order by m.parentid
+    </select>
+
+</mapper>

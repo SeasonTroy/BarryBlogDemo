@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bootdang.system.mapper.UserMapper">
+
+    <resultMap id="user_role" type="com.bootdang.system.entity.User">
+         <id property="userId" column="user_id" javaType="integer" jdbcType="INTEGER"/>
+         <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="VARCHAR"/>
+        <result property="Birthday" column="Birthday" jdbcType="DATE"/>
+        <result property="createtime" column="createtime" jdbcType="TIMESTAMP"/>
+        <result property="updatetime" column="updatetime" jdbcType="TIMESTAMP"/>
+        <result property="lastlogin" column="lastlogin" jdbcType="TIMESTAMP"/>
+        <result property="createuserid" column="crateuserid" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+        <result property="context" column="context" jdbcType="CLOB"/>
+        <result property="Province" column="Province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="logo" column="logo" jdbcType="VARCHAR"/>
+        <result property="work" column="work" jdbcType="VARCHAR"/>
+        <result property="depaid" column="depaid" jdbcType="INTEGER"/>
+        <result property="logincount" column="logincount" jdbcType="INTEGER"/>
+        <result property="hobby" column="hobby" jdbcType="CLOB"/>
+        <result property="jf" column="jf" jdbcType="INTEGER"/>
+        <result property="isAdmin" column="is_admin" jdbcType="INTEGER"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <collection property="role" ofType="com.bootdang.system.entity.Role"  column="user_id" javaType="ArrayList" select="com.bootdang.system.mapper.RoleMapper.selectUserid"/>
+    </resultMap>
+
+    <insert id="insert"  useGeneratedKeys="true" keyProperty="userId">
+        insert into sys_user
+        (
+          username,
+          password,
+          `name`,
+          sex,
+          Birthday,
+          createtime,
+          updatetime,
+          lastlogin,
+          createuserid,
+          state,
+          context,
+          Province,
+          city,
+          address,
+          logo,
+          `work`,
+          depaid,
+          logincount,
+          hobby,
+          jf,
+          is_admin,
+          email,
+          phone
+        )values
+        (
+          #{username},
+          #{password},
+          #{name},
+          #{sex},
+          #{Birthday},
+          #{createtime},
+          #{updatetime},
+          #{lastlogin},
+          #{createuserid},
+          #{state},
+          #{context},
+          #{Province},
+          #{city},
+          #{address},
+          #{logo},
+          #{work},
+          #{depaid},
+          #{logincount},
+          #{hobby},
+          #{jf},
+          #{isAdmin},
+          #{email},
+          #{phone}
+        )
+    </insert>
+    <update id="updatelogupdate">
+        update  sys_user set logincount=logincount+1 where user_id=#{id}
+    </update>
+    <update id="updateJfADD">
+        update sys_user set jf=jf+${jf} where user_id=${id}
+    </update>
+
+    <select id="SelectByName" resultType="user">
+        select*from sys_user where username=#{name}
+    </select>
+
+    <select id="SelectByEmail" resultType="user">
+        select*from sys_user where email=#{email}
+    </select>
+
+    <select id="selectByUserRole" resultMap="user_role">
+        select * from sys_user where user_id=#{id}
+    </select>
+    <select id="selectByAllRole" resultMap="user_role">
+        select * from sys_user where is_admin=1
+    </select>
+    <select id="SelectByAdminName" resultType="com.bootdang.system.entity.User">
+          select*from sys_user where username=#{name} and is_admin=1
+    </select>
+
+</mapper>

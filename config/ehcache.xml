@@ -1,0 +1,45 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+         updateCheck="false">
+
+    <!--缓存的路径  当前配置为系统的临时目录  可以任意修改为任意盘符下的文件夹-->
+    <diskStore path="F:/propty/ehcache"/>
+
+
+    <!--
+    maxElementsInMemory:内存存储数据的个数
+    eternal:缓存数据是否永久有效  建议false
+    timeToIdleSeconds:最大空闲时间 (s)  空闲时间超出配置，清理内存数据
+    timeToLiveSeconds:存活时间(s)
+    overflowToDisk: 溢出到磁盘(磁盘最多存储多少个对象) 如果内存超过maxElementsInMemory配置那么放置到配置的磁盘路径上
+    diskPersistent: 服务器重启时是否保留磁盘数据
+    diskExpiryThreadIntervalSeconds: 每隔多长时间进行线程扫描
+    memoryStoreEvictionPolicy:淘汰策略 LRU(最近最少)  FIFO(先进先出 Frist in Frist out)
+    -->
+    <defaultCache maxEntriesLocalHeap="0"
+                  eternal="true"
+                  timeToIdleSeconds="0"
+                  timeToLiveSeconds="0"
+                  overflowToDisk="true"
+                  diskPersistent="true"/>
+
+    <!--维护个人登陆队列缓存-->
+    <cache name="shiro-activeSessionCache" eternal="false" maxElementsInMemory="1000"
+           overflowToDisk="false" diskPersistent="true" timeToIdleSeconds="60"
+           timeToLiveSeconds="60" memoryStoreEvictionPolicy="LRU"/>
+
+    <!--永久有效 由session调度器完成删除-->
+    <cache name="jlbk.shiro.systemcache"
+           maxEntriesLocalHeap="0"
+           eternal="true"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="0"
+           overflowToDisk="true"
+           diskPersistent="true"
+    />
+
+    <cache name="lemonCache"
+           eternal="false"
+           maxEntriesLocalHeap="0"
+           timeToIdleSeconds="200"/>
+</ehcache>

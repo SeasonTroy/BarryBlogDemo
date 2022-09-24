@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bootdang.system.mapper.NoticeUserMapper">
+       <resultMap id="notice" type="com.bootdang.system.entity.NoticeUser">
+        <id property="noseId" column="nose_id" jdbcType="INTEGER"/>
+           <result property="noticeId" column="notice_id" jdbcType="INTEGER"/>
+           <result property="userId" column="user_id" jdbcType="INTEGER"/>
+           <result property="isRead" column="is_read" jdbcType="INTEGER"/>
+           <result property="readtime" column="readtime" jdbcType="TIMESTAMP"/>
+           <association property="notice" column="notice_id" javaType="com.bootdang.system.entity.Notice" select="noticebyid"/>
+      </resultMap>
+    <select id="selectNotUser" parameterType="integer" resultMap="notice">
+        select*from sys_notice_user where user_id=${_parameter}
+    </select>
+    <select id="noticebyid" resultType="com.bootdang.system.entity.Notice">
+          select*from sys_notice where not_id=${_parameter}
+    </select>
+</mapper>

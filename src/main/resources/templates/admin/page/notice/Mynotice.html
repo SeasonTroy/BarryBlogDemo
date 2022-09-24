@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<title>我的通知</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="shortcut icon" th:href="@{/static/favicon.ico}" type="image/x-icon" />
+	<link rel="stylesheet" th:href="@{/static/css/font.css}">
+	<link rel="stylesheet" th:href="@{/static/lib/layui/css/layui.css}">
+	<link rel="stylesheet" th:href="@{//at.alicdn.com/t/font_eolqem241z66flxr.css}" media="all" />
+	<link rel="stylesheet" th:href="@{/static/css/news.css}" media="all" />
+</head>
+<body th:inline="text" class="childrenBody">
+
+
+	<div class="layui-form links_list">
+	  	<table class="layui-table">
+		    <colgroup>
+				<col width="15%">
+				<col width="25%">
+				<col>
+				<col>
+				<col>
+				<col width="20%">
+				<col width="13%">
+		    </colgroup>
+		    <thead>
+				<tr>
+					<th style="text-align:left;">通知标题</th>
+					<th>通知内容</th>
+					<th>发布时间</th>
+					<th>状态</th>
+					<th>备注信息</th>
+					<th>操作</th>
+				</tr> 
+		    </thead>
+		    <tbody style="text-align:center;" class="links_content">
+            <tr th:each="noticeuser:${noticeuser}">
+
+                <td th:text="${noticeuser.getNotice().getTitle()}">sss</td>
+				<td><a title="查看" href="javascript:;"  th:onclick="see([[${noticeuser.getNotice().getContext()}]])">
+					<span class="layui-badge layui-bg-green">点击查看</span>
+				</a></td>
+                <td th:text="${noticeuser.getNotice().getCreatetime()}">所属</td>
+                <td th:if="${noticeuser.getIsRead()}==1">
+					<span class="layui-badge layui-bg-green">已读</span>
+				</td>
+				<td th:if="${noticeuser.getIsRead()}==0">
+					<span  class="layui-badge">未读</span>
+				</td>
+				<td th:text="${noticeuser.getNotice().getRemarks()}" >
+
+				</td>
+                <td class="td-manage">
+					<button title="查看" th:onclick="|x_linkedit_show(${noticeuser.getNoseId()},${noticeuser.getNotice().getNotId()},'/admin/noticeuser/see')|" type="button" class="layui-btn layui-btn-sm">
+						<i class="layui-icon">&#xe609;</i>
+					</button>
+                </td>
+            </tr>
+			</tbody>
+		</table>
+	</div>
+	<div id="page"></div>
+	<script th:src="@{/static/js/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}" charset="utf-8"></script>
+	<script type="text/javascript" th:src="@{/static/js/xadmin.js}"></script>
+<script>
+    layui.use(['laypage','form','layer','jquery'], function() {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.jquery;
+
+    })
+    function x_linkedit_show(id,nid,url){
+
+        layer.open({
+            type: 2,
+            area: [($(window).width()*0.9)+'px',($(window).height() - 50)+'px'],
+            fix: false, //不固定
+            maxmin: true,
+            shadeClose: true,
+            shade:0.4,
+            title: "修改",
+            content: url+"?id="+id+"&nid="+nid
+        });
+    }
+    function see(desc){
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 0,
+            shadeClose: true,
+            skin: 'yourclass',
+            content: desc
+        });
+    }
+
+
+</script>
+</body>
+</html>

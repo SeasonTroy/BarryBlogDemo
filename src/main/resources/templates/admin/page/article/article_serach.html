@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  
+  <head>
+    <meta charset="UTF-8">
+      <title>搜索页面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" th:href="@{/static/favicon.ico}" type="image/x-icon" />
+    <link rel="stylesheet" th:href="@{/static/css/font.css}">
+    <link rel="stylesheet" th:href="@{/static/lib/layui/css/layui.css}">
+    <link rel="stylesheet" th:href="@{/static/css/xadmin.css}">
+    <script th:src="@{/static/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/lib/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/static/js/xadmin.js}"></script>
+
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body th:inline="text">
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a >
+          文章搜索
+        </a>
+      </span>
+      <a class="layui-btn layui-btn-primary layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:38px">ဂ</i></a>
+    </div>
+    <div class="x-body">
+      <div class="layui-row">
+        <form method="post" action="/admin/article/serach" class="layui-form layui-col-md12 x-so">
+          <input type="text" name="serach" lay-verify="required" th:value="${serach}" style="width:310px;"  placeholder="搜索已经审核过的资源,输入文章内容和关键词" autocomplete="off" class="layui-input">
+          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+      </div>
+      <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        <button type="button" onclick="indexAll()" class="layui-btn layui-btn-warm">一键生成索引</button>
+        <button class="layui-btn layui-btn-danger" onclick="delIndexAll()"><i class="layui-icon"></i>一键清空索引</button>
+        <span class="x-right" style="line-height:40px">共有数据：[[${count}]] 条</span>
+      </xblock>
+      <table th:if="${count!=0}" class="layui-table">
+        <thead>
+          <tr style="text-align:center;">
+            <th>
+              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th>资源标题</th>
+            <th>封面图片</th>
+            <th>资源描述</th>
+            <th>创建时间</th>
+            <th>是否允许评论</th>
+            <th>资源类型</th>
+            <th>是否热门资源</th>
+            <th>是否免费</th>
+            <th>下载需要积分</th>
+            <th>是否顶置</th>
+            <th >操作</th>
+            </tr>
+        </thead>
+        <tbody style="text-align:center;" class="layui-form">
+          <tr th:each="article:${articles}">
+            <td>
+              <div class="layui-unselect layui-form-checkbox" lay-skin="primary" th:attr="data-id=${article.getArId()}" ><i class="layui-icon">&#xe605;</i></div>
+            </td>
+            <td th:title="${article.getTitle()}" style="max-width:120px; text-overflow:ellipsis;white-space:nowrap;overflow:hidden;" th:utext="${article.getTitle()}">标题</td>
+            <td>
+              <img style="max-width:80px; max-height:60px;" th:src="${article.getLitpic()}"/>
+            </td>
+
+            <td  style="max-width:100px;" >
+             <a title="查看" href="javascript:;"  th:onclick="see([[${article.getDescription()}]])">
+               <span class="layui-badge layui-bg-green">点击查看</span>
+             </a>
+            </td>
+            <td  th:text="${#temporals.format(article.getCreatetime(),'yyyy-MM-dd HH:mm:ss')}">
+              创建时间
+            </td>
+            <td>
+              <input type="checkbox"  lay-filter="pl" th:value="${article.getArId()}" th:checked="${article.getCommentState()==1}" lay-text="允许|禁止"  lay-skin="switch">
+            </td>
+            <td th:switch="${article.getType()}">
+              <span th:case="1">文章</span>
+              <span th:case="2">资源</span>
+              <span th:case="3">文章/资源</span>
+            </td>
+            <td>
+              <input type="checkbox" lay-filter="rm"  th:value="${article.getArId()}" th:checked="${article.getIsHot()==1}" lay-text="是|否" lay-skin="switch">
+            </td>
+            <td>
+              <input type="checkbox" lay-filter="mf"   th:value="${article.getArId()}" th:checked="${article.getIsFree()}" lay-text="是|否" lay-skin="switch">
+            </td>
+            <td th:text="${article.getJf()}+'积分'">
+              3积分
+            </td>
+            <td>
+              <input type="checkbox" lay-filter="dz" th:value="${article.getArId()}" th:checked="${article.getTopstate()==1}"  lay-text="是|否" lay-skin="switch">
+            </td>
+            <td>
+              &nbsp;
+              <a title="编辑"  th:onclick="|x_trial_show(${article.getArId()},'修改','/admin/article/edit')|" href="javascript:;">
+                <i class="layui-icon">&#xe635;</i>
+              </a>
+              &nbsp;
+              <a title="删除" th:onclick="|member_del(this,${article.getArId()})|" href="javascript:;">
+                <i class="layui-icon">&#xe640;</i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="text-align: center; font-size:20px; color:#3e495f" th:if="${count==0}">
+        [[${msg}]]
+      </div>
+
+
+    </div>
+    <script th:inline="javascript">
+
+      layui.use(['form','laydate','laypage'], function(){
+        var laydate = layui.laydate,laypage=layui.laypage;
+
+
+
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#end' //指定元素
+        });
+          var form = layui.form;
+
+          //是否开启评论
+          form.on('switch(pl)', function(data){
+              $.ajax({
+                  url:"/admin/article/updatepl",
+                  type: 'post',
+                  dataType: 'json',
+                  data:{id:data.elem.value,state:data.elem.checked},
+                  success:function (data) {
+                      if(data.code==200){
+                          layer.msg(data.msg);
+                      }else if(data.code==500){
+                          layer.msg(data.msg);
+                      }else if(data.hashMap.code=='999'){
+                          layer.msg(data.hashMap.msg);
+                      }
+                  },
+                  error:function () {
+
+                  }
+              });
+          });
+          //是否是热门资源
+          form.on('switch(rm)', function(data){
+              $.ajax({
+                  url:"/admin/article/updaterm",
+                  type: 'post',
+                  dataType: 'json',
+                  data:{id:data.elem.value,state:data.elem.checked},
+                  success:function (data) {
+                      if(data.code==200){
+                          layer.msg(data.msg);
+
+                      }else if(data.code==500){
+                          layer.msg(data.msg);
+                          data.elem.checked=true;
+                      }else if(data.hashMap.code=='999'){
+                          layer.msg(data.hashMap.msg);
+                      }
+                  },
+                  error:function () {
+                      layer.msg("网络错误");
+                  }
+              });
+          });
+          //是否免费
+          form.on('switch(mf)', function(data){
+              $.ajax({
+                  url:"/admin/article/updatemf" ,
+                  type: 'post',
+                  dataType: 'json',
+                  data:{id:data.elem.value,state:data.elem.checked},
+                  success:function (data) {
+                      if(data.code==200) {
+                          layer.msg(data.msg);
+
+                      }
+                      else if(data.code==500){
+                          layer.msg(data.msg);
+                          data.elem.checked=true;
+                      }else if(data.hashMap.code=='999'){
+                          layer.msg(data.hashMap.msg);
+                      }
+                  },
+                  error:function () {
+                      layer.msg("网络错误");
+                  }
+              });
+          });
+          //是否顶置
+          form.on('switch(dz)', function(data){
+              $.ajax({
+                  url:"/admin/article/updatedz" ,
+                  type: 'post',
+                  dataType: 'json',
+                  data:{id:data.elem.value,state:data.elem.checked},
+                  success:function (datac) {
+                      if(datac.code==200){
+                          layer.msg(datac.msg);
+                      }else if(datac.code==500){
+                          layer.msg(datac.msg);
+                          data.elem.checked=true;
+                      }else if(datac.hashMap.code=='999'){
+                          layer.msg(datac.hashMap.msg);
+                      }
+                  },
+                  error:function () {
+                      layer.msg("网络错误");
+                  }
+              });
+          });
+      });
+
+      function msge(data) {
+          layui.use('layer', function() {
+              var layer = layui.layer;
+              layer.msg(data);
+              setTimeout('window.location.reload()',2000);
+          })
+      }
+
+      function x_article_show(title,url,w,h){
+          if (title == null || title == '') {
+              title=false;
+          };
+          if (url == null || url == '') {
+              url="404.html";
+          };
+          if (w == null || w == '') {
+              w=($(window).width()*0.9);
+          };
+          if (h == null || h == '') {
+              h=($(window).height() - 50);
+          };
+          layer.open({
+              type: 2,
+              area: [w+'px', h +'px'],
+              fix: false, //不固定
+              maxmin: true,
+              shadeClose: true,
+              shade:0.4,
+              title: title,
+              content: url
+          });
+      }
+
+      function x_trial_show(id,title,url,w,h){
+          if (url == null || url == '') {
+              url="404.html";
+          };
+          layer.open({
+              type: 2,
+              area: [($(window).width()*0.9)+'px', ($(window).height() - 20) +'px'],
+              fix: false, //不固定
+              maxmin: true,
+              shadeClose: true,
+              shade:0.4,
+              title: title,
+              content: url+"?id="+id,
+              end:function(){
+
+              }
+          });
+      }
+
+      /*资源-删除*/
+      function member_del(obj,id){
+          layer.confirm('确认要删除吗？'+id,function(index){
+              //发异步删除数据
+              $.ajax({
+                  url:"/admin/article/delete",
+                  method:'post',
+                  dataType:'json',
+                  data:{id:id},
+                  success:function (data) {
+                      if(data.code==200){
+                          $(obj).parents("tr").remove();
+                          layer.msg("删除成功");
+                      }else if(data.code==500){
+                          layer.msg("删除失败");
+                      }else if(data.hashMap.code=='999'){
+                          layer.msg(data.hashMap.msg);
+                      }
+                  },error:function () {
+                      layer.msg("网络错误");
+                  }
+              })
+          });
+      }
+
+
+      //批量删除
+      function delAll (argument) {
+        var datas = tableCheck.getData();
+          layer.confirm('确认要删除吗？',function(index){
+              //捉到所有被选中的，发异步进行删除
+              $.ajax({
+                  url:"/admin/article/deleteAll",
+                  type: 'post',
+                  dataType: 'json',
+                  data:{datas:datas.toString()},
+                  success:function (data) {
+                      if(data.code==200){
+                          layer.msg("删除成功");
+                          $(".layui-form-checked").not('.header').parents('tr').remove();
+                      }else if(data.code==500){
+                          layer.msg("删除失败");
+                      }else if(data.hashMap.code=='999'){
+                          layer.msg(data.hashMap.msg);
+                      }
+                  }
+              });
+
+          });
+      }
+         //批量创建索引
+      function indexAll(){
+          var datas = tableCheck.getData();
+          var load = layer.load(1);
+          $.ajax({
+              url:"/admin/article/indexAll",
+              type: 'post',
+              dataType: 'json',
+              data:{datas:datas},
+              success:function (data) {
+                  if(data.code==200){
+                      layer.close(load);
+                      layer.msg(data.msg);
+                  }else if(data.code==500){
+                      layer.close(loada);
+                      layer.msg(data.msg);
+                  }else if(data.hashMap.code=='999') {
+                      layer.close(load);
+                      layer.msg(data.hashMap.msg);
+                  }
+              }
+          });
+      }
+      //删除全部索引
+      function  delIndexAll() {
+          var load = layer.load(1);
+          $.ajax({
+              url:"/admin/article/deleteIndexAll",
+              type: 'post',
+              dataType: 'json',
+              data:{},
+              success:function (data) {
+                  if(data.code==200){
+                      layer.close(load);
+                      layer.msg(data.msg);
+                  }else if(data.code==500){
+                      layer.close(loada);
+                      layer.msg(data.msg);
+                  }else if(data.hashMap.code=='999'){
+                      layer.close(load);
+                      layer.msg(data.hashMap.msg);
+                  }
+              }
+          });
+      }
+      //查看描述
+      function see(desc){
+          layer.open({
+              type: 1,
+              title: false,
+              closeBtn: 0,
+              shadeClose: true,
+              skin: 'yourclass',
+              content: desc
+          });
+      }
+
+
+    </script>
+
+
+
+
+  </body>
+</html>

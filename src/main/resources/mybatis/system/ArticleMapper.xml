@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bootdang.system.mapper.ArticleMapper">
+
+    <resultMap id="article_type" type="com.bootdang.system.entity.Article">
+        <id property="arId" column="ar_id" jdbcType="INTEGER"/>
+        <result property="arttypeId" column="arttype_id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="litpic" column="litpic" jdbcType="VARCHAR"/>
+        <result property="context" column="context" jdbcType="CLOB"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="createuserid" column="createuserid" jdbcType="INTEGER"/>
+        <result property="createtime" column="createtime" jdbcType="TIMESTAMP"/>
+        <result property="updatetime" column="updatetime" jdbcType="TIMESTAMP"/>
+        <result property="commentcount" column="commentcount" jdbcType="INTEGER"/>
+        <result property="commentState" column="comment_state" jdbcType="INTEGER"/>
+        <result property="clickcount" column="clickcount" jdbcType="INTEGER"/>
+        <result property="weight" column="weight" jdbcType="INTEGER"/>
+        <result property="downloadurl" column="downloadurl" jdbcType="VARCHAR"/>
+        <result property="downloadpassword" column="downloadpassword" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="topstate" column="topstate" jdbcType="INTEGER"/>
+        <result property="isFree" column="is_free" jdbcType="INTEGER"/>
+        <result property="jf" column="jf" jdbcType="INTEGER"/>
+        <result property="isHot" column="is_hot" jdbcType="INTEGER"/>
+        <result property="resson" column="resson" jdbcType="VARCHAR"/>
+        <result property="checkDatetime" column="check_datetime" jdbcType="TIMESTAMP"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <association property="user" column="createuserid"  jdbcType="INTEGER" select="com.bootdang.system.mapper.UserMapper.selectByUserRole"/>
+        <association property="pingluncount" jdbcType="INTEGER" column="ar_id" select="pinglunnum"/>
+        <collection property="arttype" column="arttype_Id"  jdbcType="INTEGER" select="com.bootdang.system.mapper.ArttypeMapper.selectbyId"/>
+
+    </resultMap>
+
+    <select id="pinglunnum"  resultType="integer">
+        select count(*) from sys_comment where articleid=${_parameter}
+    </select>
+    <update id="updateCount">
+       update sys_article set clickcount=clickcount+1 where ar_id=${_parameter}
+    </update>
+
+    <select id="selectArticleAll" resultMap="article_type">
+        select*from sys_article
+        <where>
+            <if test="arId!='' and arId!=null">
+                and ar_id=${arId}
+            </if>
+            <if test="arttypeId!='' and arttypeId!=null">
+               and artype_id=${arttypeId}
+            </if>
+            <if test="title!='' and title!=null">
+                and title=${title}
+            </if>
+            <if test="litpic!='' and litpic!=null">
+                and litpic=${litpic}
+            </if>
+            <if test="createuserid!='' and createuserid!=null">
+                and createuserid=${createuserid}
+            </if>
+            <if test="createtime!='' and createtime!=null">
+                and createtime=${createtime}
+            </if>
+            <if test="updatetime!='' and updatetime!=null">
+                and updatetime=${updatetime}
+            </if>
+            <if test="commentState!='' and commentState!=null">
+                and commentState=${commentState}
+            </if>
+            <if test="state!='' and state!=null">
+                and state=${state}
+            </if>
+            <if test="topstate!='' and topstate!=null">
+                and topstate=${topstate}
+            </if>
+            <if test="isFree!='' and isFree!=null">
+                and isFree=${isFree}
+            </if>
+            <if test="isHot!='' and isHot!=null">
+                and isHot=${isHot}
+            </if>
+            <if test="checkDatetime!='' and checkDatetime!=null">
+                and checkDatetime=${checkDatetime}
+            </if>
+            <if test="type!='' and type!=null">
+                <choose>
+                    <when  test="type==1 or type==0">
+                        and type=${type}
+                    </when>
+                    <otherwise>
+                        and type in(2,3)
+                    </otherwise>
+                </choose>
+
+            </if>
+
+        </where>
+        order by createtime desc
+    </select>
+</mapper>

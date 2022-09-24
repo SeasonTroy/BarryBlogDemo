@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>javaBarry博客社区管理系统</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta http-equiv="Access-Control-Allow-Origin" content="*">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="icon" th:href="@{favicon.ico}">
+	<link rel="stylesheet" th:href="@{/static/layui-v2.5.5/layui/css/layui.css}" media="all" />
+	<link rel="stylesheet" href="http://at.alicdn.com/t/font_eolqem241z66flxr.css" media="all" />
+	<link rel="stylesheet" th:href="@{/static/css/main.css}" media="all" />
+</head>
+<body th:inline="text" class="main_body">
+	<div class="layui-layout layui-layout-admin">
+		<!-- 顶部 -->
+		<div class="layui-header header">
+			<div class="layui-main">
+				<a href="#" class="logo">javaBarry博客社区</a>
+				<!-- 搜索 -->
+				<div class="layui-form component">
+			        <select  name="serach"  lay-verify="required"  lay-filter="serach" lay-search="">
+						<option value="">直接选择或搜索选择</option>
+						<option  th:each="menu:${search}" th:value="${menu.getUrl()}">[[${menu.getTitle()}]]</option>
+			        </select>
+			        <i class="layui-icon">&#xe615;</i>
+			    </div>
+			    <!-- 天气信息 -->
+			    <div class="weather" pc>
+			    	<div id="tp-weather-widget"></div>
+					<script>(function(T,h,i,n,k,P,a,g,e){g=function(){P=h.createElement(i);a=h.getElementsByTagName(i)[0];P.src=k;P.charset="utf-8";P.async=1;a.parentNode.insertBefore(P,a)};T["ThinkPageWeatherWidgetObject"]=n;T[n]||(T[n]=function(){(T[n].q=T[n].q||[]).push(arguments)});T[n].l=+new Date();if(T.attachEvent){T.attachEvent("onload",g)}else{T.addEventListener("load",g,false)}}(window,document,"script","tpwidget","//widget.seniverse.com/widget/chameleon.js"))</script>
+					<script>
+						tpwidget("init", {
+					    "flavor": "slim",
+					    "location": "WX4FBXXFKE4F",
+					    "geolocation": "disabled",
+					    "language": "zh-chs",
+					    "unit": "c",
+					    "theme": "chameleon",
+					    "container": "tp-weather-widget",
+					    "bubble": "disabled",
+					    "alarmType": "badge",
+					    "color": "#FFFFFF",
+					    "uid": "U9EC08A15F",
+					    "hash": "14dff75e7253d3a8b9727522759f3455"
+					});
+					tpwidget("show");</script>
+			    </div>
+			    <!-- 顶部右侧菜单 -->
+			    <ul class="layui-nav top_menu">
+					<li class="layui-nav-item showNotice"  pc>
+						<a href="javascript:x_not_show('我的通知','/admin/noticeuser')"><i class="iconfont icon-gonggao"></i><cite>我的通知<span class="layui-badge">[[${notcount}]]</span></cite></a>
+					</li>
+
+			    	<li class="layui-nav-item showNotice" id="showNotice" pc>
+						<a href="javascript:;"><cite>系统公告</cite></a>
+					</li>
+			    	<li class="layui-nav-item" mobile>
+			    		<a href="javascript:;" data-url="/page/user/changePwd.html"><i class="iconfont icon-shezhi1" data-icon="icon-shezhi1"></i><cite>设置</cite></a>
+			    	</li>
+			    	<li class="layui-nav-item" mobile>
+			    		<a href="javascript:;"><i class="iconfont icon-loginout"></i> 退出</a>
+			    	</li>
+					<li class="layui-nav-item lockcms" pc>
+						<a href="javascript:;"><i class="iconfont icon-lock1"></i><cite>锁屏</cite></a>
+					</li>
+					<li class="layui-nav-item" pc>
+						<a href="javascript:;">
+							<img th:src="${session.User.getLogo()}" class="layui-circle" width="35" height="35">
+							<cite th:text="${session.User.getName()}">javaBarry</cite>
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a th:onclick="|x_gg_show(${session.User.getUserId()},'/admin/administrators/admininfo')|"><i class="iconfont icon-zhanghu" data-icon="icon-zhanghu"></i><cite>个人资料</cite></a></dd>
+							<dd><a th:onclick="|x_update_show(${session.User.getUserId()},'/admin/passwordedit')|"><i class="iconfont icon-shezhi1" data-icon="icon-shezhi1"></i><cite>修改密码</cite></a></dd>
+							<dd><a href="/admin/logout"><i class="iconfont icon-loginout"></i><cite>退出</cite></a></dd>
+						</dl>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<!-- 左侧导航 -->
+		<div class="layui-side layui-bg-black">
+			<div class="user-photo">
+				<a class="img" title="我的头像" ><img id="xlogo" th:src="${session.User.getLogo()}"></a>
+				<p>你好！<span th:text="${session.User.getName()}" class="userName">javaBarry博客</span>, 欢迎登录</p>
+			</div>
+			<div class="navBar layui-side-scroll"></div>
+		</div>
+		<!-- 右侧内容 -->
+		<div class="layui-body layui-form">
+			<div class="layui-tab marg0" lay-filter="bodyTab">
+				<ul class="layui-tab-title top_tab">
+					<li class="layui-this" lay-id=""><i class="iconfont icon-computer"></i> <cite>后台首页</cite></li>
+				</ul>
+				<div class="layui-tab-content clildFrame">
+					<div class="layui-tab-item layui-show">
+						<iframe id="namecc" src="/admin/main"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 底部 -->
+		<div class="layui-footer footer">
+			<p>copyright @2020 javaBarry　　<a onclick="donation()" class="layui-btn layui-btn-danger l·ayui-btn-small">捐赠作者</a></p>
+		</div>
+	</div>
+
+	<!-- 锁屏 -->
+	<div class="admin-header-lock" id="lock-box" style="display: none;">
+		<div class="admin-header-lock-img"><img class="simglogo" src="" th:src="${session.User.getLogo()}"></div>
+		<div class="admin-header-lock-name" th:text="${session.User.getName()}" id="lockUserName">javaBarry</div>
+		<div class="input_btn">
+			<input type="password" class="admin-header-lock-input layui-input" placeholder="请输入密码解锁.." name="lockPwd" id="lockPwd" />
+			<button class="layui-btn" id="unlock">解锁</button>
+		</div>
+		<p>请输入你的登陆密码，否则不会解锁成功哦！！！</p>
+	</div>
+	<!-- 移动导航 -->
+	<div class="site-tree-mobile layui-hide"><i class="layui-icon">&#xe602;</i></div>
+	<div class="site-mobile-shade"></div>
+
+	<script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
+	<script type="text/javascript" th:src="@{/static/js/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/static/js/leftNav.js}"></script>
+	<script type="text/javascript" th:src="@{/static/js/index.js}"></script>
+<script>
+
+
+    function msge(data) {
+        layui.use('layer', function() {
+            var layer = layui.layer;
+            layer.msg(data);
+            setTimeout('window.location.reload()',2000);
+        })
+    }
+    function x_not_show(title,url){
+
+        layer.open({
+            type: 2,
+            area: [($(window).width()*0.9)+'px',($(window).height() - 50)+'px'],
+            fix: false, //不固定
+            maxmin: true,
+            shadeClose: true,
+            shade:0.4,
+            title: title,
+            content: url
+        });
+    }
+
+    function x_update_show(id,url,w,h){
+
+        if (url == null || url == '') {
+            url="/error/404.html";
+        };
+
+        layer.open({
+            type: 2,
+            shade: false,
+            fix: false,
+            shadeClose: true,
+            area: ['700px','500px'],
+            maxmin: true,
+            content: url+"?id="+id,
+            success: function(layero){
+                // layer.setTop(layero); //重点2
+            }
+        });
+    }
+
+    function callimgurl(url){
+        $("#xlogo").attr("src",url);
+    }//回调修改头像
+
+
+</script>
+
+
+
+</body>
+
+</html>

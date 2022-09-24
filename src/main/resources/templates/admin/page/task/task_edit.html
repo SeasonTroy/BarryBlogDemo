@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:include="/admin/page/task/header::editheader">
+</head>
+<body style="margin-top:20px;" class="childrenBody">
+	<form class="layui-form" style="width:80%;">
+
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<label class="layui-form-label">cron</label>
+				<div class="layui-input-inline">
+					<input type="hidden" name="taskId" th:value="${task.getTaskId()}">
+					<input type="text" name="cron" th:value="${task.getCron()}" placeholder="cron表达式" class="layui-input linksTime" lay-verify="required" >
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">任务描述</label>
+			<div class="layui-input-block">
+				<textarea placeholder="任务描述" th:text="${task.getDescription()}" name="description" class="layui-textarea linksDesc"></textarea>
+			</div>
+		</div>
+
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit lay-filter="edittask">立即提交</button>
+		    </div>
+		</div>
+	</form>
+	<script th:src="@{/static/js/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
+	<script >
+        layui.use(['form','layer','jquery'],function(){
+            var form = layui.form(),
+                layer = layui.layer,
+                $ = layui.jquery;
+
+            form.on("submit(edittask)",function(data){
+                $.ajax({
+					url:'/admin/task/update',
+					method:'post',
+					dataType:'json',
+					data:data.field,
+					success:function (datas) {
+                        if(datas.code==200){
+                            window.parent.msge("修改成功");
+                            var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+
+                        }else if(datas.code==500){
+                            window.parent.msge("修改失败");
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }else if(datas.hashMap.code=='999'){
+                            window.parent.msge(datas.hashMap.msg);
+						};
+
+                    },error:function () {
+						layer.msg("网络错误");
+                    }
+				})
+
+
+                return false;
+            })
+
+        })
+	</script>
+</body>
+</html>

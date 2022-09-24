@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+    <link rel="stylesheet" th:href="@{/static/css/font.css}">
+    <link rel="stylesheet" th:href="@{/static/css/xadmin.css}">
+    <script th:src="@{/static/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/lib/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/static/js/xadmin.js}"></script>
+
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body class="layui-anim layui-anim-up">
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+      <a th:each="menur:${daohang}" th:text="${menur.get('title')}" th:href="${menur.get('url')}">
+        </a>
+      </span>
+      <a class="layui-btn layui-btn-primary layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:38px">ဂ</i></a>
+    </div>
+    <div class="x-body">
+      <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so">
+          <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
+          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+      </div>
+      <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        <button class="layui-btn" onclick="x_admin_show('添加用户','./member-add.html',600,400)"><i class="layui-icon"></i>添加</button>
+        <span class="x-right" style="line-height:40px">共有：88 人</span>
+      </xblock>
+      <table  class="layui-table layui-form">
+        <thead >
+          <tr >
+            <th>
+              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th>头像</th>
+            <th>用户名</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>手机</th>
+            <th>邮箱</th>
+            <th>地址</th>
+            <th>加入时间</th>
+            <th>拥有积分</th>
+            <th>添加积分</th>
+            <th>状态</th>
+            <th>操作</th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="user:${users}">
+            <td>
+              <div class="layui-unselect layui-form-checkbox" lay-skin="primary" th:attr="data-id=${user.getUserId()}"><i class="layui-icon">&#xe605;</i></div>
+            </td>
+            <td><img width="80px" th:src="${user.getLogo()}"></td>
+            <td th:text="${user.getUsername()}">小明</td>
+            <td th:text="${user.getName()}">小明</td>
+            <td th:text="${user.getSex()}">男</td>
+            <td th:text="${user.getPhone()}">13000000000</td>
+            <td th:text="${user.getEmail()}">admin@mail.com</td>
+            <td th:text="${user.getProvince()}+'&nbsp'+${user.getCity()}+'&nbsp'+${user.getArea()}"></td>
+            <td th:text="${user.getCreatetime()}">2017-01-01 11:11:42</td>
+            <td th:text="${user.getJf()}+'积分'">100</td>
+            <td style="text-align: center;">
+
+              <button style="margin-top:10px;" th:onclick="|addjf(${user.getUserId()},this)|" class="layui-btn  layui-btn-xs">添加</button>
+
+            </td>
+            <td class="td-status">
+              <input type="checkbox" lay-text="启用|停用" lay-filter="state" th:value="${user.getUserId()}" th:checked="${user.getState()}=='1'" lay-skin="switch">
+            </td>
+            <td class="td-manage">
+              <a  class="layui-btn layui-btn-sm layui-btn-warm" th:onclick="|x_admin_show(${user.getUserId()},'/admin/user/edit')|" title="修改密码" href="javascript:;">
+                修改密码
+              </a>
+              <a title="删除" class="layui-btn layui-btn-sm layui-btn-danger" th:onclick="|member_del(this,${user.getUserId()})|" href="javascript:;">
+                删除
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="page">
+        <div>
+          <a class="prev" href="">&lt;&lt;</a>
+          <a class="num" href="">1</a>
+          <span class="current">2</span>
+          <a class="num" href="">3</a>
+          <a class="num" href="">489</a>
+          <a class="next" href="">&gt;&gt;</a>
+        </div>
+      </div>
+
+    </div>
+
+
+    <script>
+      layui.use('form', function(){
+        var form = layui.form;
+
+          form.on('switch(state)', function(data){
+              $.ajax({
+                  url:"/admin/user/state",
+                  type: 'post',
+                  dataType: 'json',
+                  data:{id:data.elem.value,state:data.elem.checked},
+                  success:function (data) {
+                      if(data.code==200){
+                          layer.msg(data.msg);
+                      }else if(data.code==500){
+                          layer.msg(data.msg);
+                      }else if(data.hashMap.code=='999'){
+                          layer.msg(data.hashMap.msg);
+                      }
+                  },
+                  error:function () {
+                       layer.msg("网络错误")
+                  }
+              });
+          });
+
+      });
+
+      function addjf(id,obj) {
+
+        /*  $.ajax({
+              url:"/admin/user/addjf",
+              type: 'post',
+              dataType: 'json',
+              data:{id:id,jf:sib.val()},
+              success:function (data) {
+                  if(data.code==200){
+                      layer.msg(data.msg);
+                  }else if(data.code==500){
+                      layer.msg(data.msg);
+                  }else if(data.hashMap.code=='999'){
+                      layer.msg(data.hashMap.msg);
+                  }
+              },
+              error:function () {
+                  layer.msg("网络错误")
+              }
+          });*/
+
+             layer.open({
+                  type: 2,
+                  area: [($(window).width()*0.2)+'px',180 +'px'],
+                  fix: false, //不固定
+                  maxmin: true,
+                  shadeClose: true,
+                  shade:0.4,
+                  title: '添加积分',
+                  content: "/admin/user/addjf?id="+id
+              });
+          }
+
+      /*用户-删除*/
+      function member_del(obj,id){
+          layer.confirm('确认要删除吗？',function(index){
+              $.ajax({
+                  url:"/admin/user/delete",
+                  type: 'post',
+                  dataType: 'json',
+                  data:{id:id},
+                  success:function (data) {
+                      if(data.code==200){
+                          $(obj).parents("tr").remove();
+                          layer.msg(data.msg);
+                      }else if(data.code==500){
+                          $(obj).parents("tr").remove();
+                          layer.msg(data.msg);
+                      }else if(data.hashMap.code=='999'){
+                          layer.msg(data.hashMap.msg);
+                      }
+                  }
+              });
+
+          });
+      }
+
+
+      function delAll (argument) {
+
+        var data = tableCheck.getData();
+
+
+          layer.confirm('确认要删除吗？',function(index){
+              //捉到所有被选中的，发异步进行删除
+              $.ajax({
+                  url:"/admin/user/deleteall",
+                  type: 'post',
+                  dataType: 'json',
+                  data:{datas:data.toString()},
+                  success:function (data) {
+                      if(data==200){
+                          layer.msg("删除成功");
+                          $(".layui-form-checked").not('.header').parents('tr').remove();
+                      }else if(data.hashMap.code=='999'){
+                          layer.msg(data.hashMap.msg);
+                      }else{
+                          layer.msg("删除失败");
+                      }
+                  }
+              });
+
+          });
+      }
+    </script>
+  </body>
+
+
+</html>

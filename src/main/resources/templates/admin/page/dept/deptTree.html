@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="on" xmlns:th="http://www.thyemleaf.org">
+<head>
+<meta charset="utf-8">
+    <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}">
+</head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content animated fadeInRight">
+
+		<div class="row">
+			<div class="col-sm-12">
+
+				<div class="ibox-content">
+                    <div id="test1" class="demo-tree demo-tree-box"></div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+    <script th:src="@{/static/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/layui-v2.5.5/layui/layui.js}" charset="utf-8"></script>
+	<script type="text/javascript">
+        layui.use(['tree','layer', 'util'], function() {
+            var tree = layui.tree
+                , layer = layui.layer
+                , util = layui.util;
+    /*    var data1 = [{
+                title: '江西'
+                ,id: 1
+                ,children: [{
+                    title: '南昌'
+                    ,id: 1000
+                    ,children: [{
+                        title: '青山湖区'
+                        ,id: 10001
+                    },{
+                        title: '高新区'
+                        ,id: 10002
+                    }]
+                },{
+                    title: '九江'
+                    ,id: 1001
+                },{
+                    title: '赣州'
+                    ,id: 1002
+                }]
+            },{
+                title: '广西'
+                ,id: 2
+                ,children: [{
+                    title: '南宁'
+                    ,id: 2000
+                },{
+                    title: '桂林'
+                    ,id: 2001
+                }]
+            },{
+                title: '陕西'
+                ,id: 3
+                ,children: [{
+                    title: '西安'
+                    ,id: 3000
+                },{
+                    title: '延安'
+                    ,id: 3001
+                }]
+            }];*/
+
+            $.ajax({
+                type: "GET",
+                url: "/admin/administrators/obtaintree",
+                dataType:'json',
+                success: function (treed) {
+                    tree.render({
+                        elem: '#test1' //默认是点击节点可进行收缩
+                        , data: treed,
+                        click: function (data) {
+                           if (JSON.stringify(data.data.id) != -1) {
+                                parent.loadDept(JSON.stringify(data.data.id),JSON.stringify(data.data.title));
+                                var index = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+                                parent.layer.close(index);
+                            }
+                        }
+                    });
+                }
+            });
+        })
+
+
+
+	</script>
+</body>
+
+</html>

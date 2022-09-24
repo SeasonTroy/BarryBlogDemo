@@ -1,0 +1,17 @@
+<footer th:fragment="footer">
+    <div class="box">
+        <div class="wxbox">
+            <ul>
+                <li><img src="/static/images/gzh.jpeg"><span>微信公众号</span></li>
+                <li><img src="/static/images/wx.jpg"><span>我的微信</span></li>
+            </ul>
+        </div>
+        <div class="endnav">
+            <p th:text="${application.systemparam.getUsertext()}"></p>
+            <p th:utext="${application.systemparam.getPowerby()}"></p>
+            <p>Copyright © <a href="" target="_blank">www.jianlluboke.com</a> All Rights Reserved. 备案号：<a href="" th:text="${application.systemparam.getBeiantext()}" target="_blank">蜀ICP备11002373号-1</a></p>
+        </div>
+    </div>
+    <a href="#">
+        <div class="top"></div>
+    </a> </footer>

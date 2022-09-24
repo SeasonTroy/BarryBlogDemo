@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>栏目添加</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" th:href="@{/static/css/font.css}">
+    <link rel="stylesheet" th:href="@{/static/css/xadmin.css}">
+    <link rel="stylesheet" th:href="@{/static/js/layui/css/layui.css}">
+    <script th:src="@{/static/js/jquery.min.js}"></script>
+
+
+    <script type="text/javascript" th:src="@{/static/js/layui/layui.js}" charset="utf-8"></script>
+    <script th:src="@{/static/js/common.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/xadmin.js}"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="x-body">
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                栏目名
+            </label>
+           <!-- <input type="hidden" name="parentid" th:value="${bymenu.getMenuId()}">-->
+            <div class="layui-input-inline">
+                <input type="text" id="title" name="title" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label  class="layui-form-label">
+                url地址
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" value="" id="url" name="url" placeholder="url地址" required lay-verify="required"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label  class="layui-form-label">
+                排序
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" value="" id="orderNum" placeholder="越小越靠前 默认排序99" name="orderNum" required lay-verify="required"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div  class="layui-form-item">
+            <label class="layui-form-label">父栏目</label>
+            <div class="layui-input-block">
+                <select  name="parentid" >
+                    <option disabled selected th:value="${bymenu.getMenuId()}" th:text="${bymenu.getTitle()}" value="0"></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择图标</label>
+                <div class="layui-input-block">
+                    <input type="text" value="layui-icon-star-fill" name="icon" id="iconPicker" lay-filter="iconPicker" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label  class="layui-form-label">
+                状态
+            </label>
+            <div class="layui-input-inline">
+                <input type="checkbox" name="state" lay-skin="switch" lay-text="开|关">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label  class="layui-form-label">
+            </label>
+            <button  class="layui-btn" lay-filter="add" lay-submit="">
+                增加
+            </button>
+        </div>
+    </form>
+</div>
+<script>
+    layui.use(['form','layer'], function(){
+        $ = layui.jquery;
+        var form = layui.form
+            ,layer = layui.layer;
+
+        //监听提交
+        form.on('submit(add)', function(data){
+            console.log(data);
+            var icon = data.field.icon;
+            var title = data.field.title;
+            var url =data.field.url;
+            var parentid=data.field.parentid;
+            var state=data.field.state==null?0:1;
+            var ordernum=data.field.orderNum;
+
+            $.ajax({
+                url:'/admin/systemcolumn/lowerinsert',
+                method:'post',
+                data:{title:title,url:url,parentid:parentid,state:state,orderNum:ordernum,icon:icon},
+                dataType:'json',
+                success:function (data) {
+                    if(data.code==200){
+                        window.parent.msge(data.msg+"，请手动刷新");
+                        x_admin_close();
+                        //window.parent.replacesx();
+                    }else{
+                        window.parent.msge(data.msg);
+                        x_admin_close();
+                        //window.parent.replacesx();
+                    }
+                },
+                error:function () {
+                    window.parent.msge("新增失败");
+                    x_admin_close();
+                    //window.parent.replacesx();
+                }
+            })
+
+            //发异步，把数据提交给php
+            layer.alert("增加成功", {icon: 6},function () {
+                // 获得frame索引
+                var index = parent.layer.getFrameIndex(window.name);
+                //关闭当前frame
+                parent.layer.close(index);
+            });
+            return false;
+        });
+
+
+    });
+
+
+    layui.use(['iconPicker'], function () {
+        var iconPicker = layui.iconPicker;
+
+        iconPicker.render({
+            // 选择器，推荐使用input
+            elem: '#iconPicker',
+            // 数据类型：fontClass/unicode，推荐使用fontClass
+            type: 'fontClass',
+            // 是否开启搜索：true/false
+            search: true,
+            // 点击回调
+            click: function (data) {
+                console.log(data);
+            }
+        });
+
+        /**
+         * 选中图标 （常用于更新时默认选中图标）
+         * @param filter lay-filter
+         * @param iconName 图标名称，自动识别fontClass/unicode
+         */
+        iconPicker.checkIcon('iconPicker', 'layui-icon-star-fill');
+
+    });
+</script>
+
+
+</body>
+
+</html>

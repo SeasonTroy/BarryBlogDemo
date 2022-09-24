@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:include="home/head::head">
+
+<![endif]-->
+</head>
+<body>
+<!--top begin-->
+<header th:include="home/head::listheader" id="header">
+
+</header>
+
+<!--top end-->
+<article> 
+  <!--lbox begin-->
+  <div class="lbox">
+    <div  style="clear:both;width:100%;  margin-bottom:20px; height:100px; background:#ffffff;">
+      <style>
+        .jk li{
+          color:#393D49;
+          font-size:16px;
+          float:left; margin-left:20px;  margin-top:15px;
+        }
+        .jk li:hover {
+          color:#5FB878;
+        }
+      </style>
+      <ul class="jk">
+        <a  th:each="arttype:${parentarttype}" th:href="|/jianluboke/${ids}/${arttype.getActtypeId()}|"><li>
+          <font th:color="${arttype.getActtypeId()==pid?'#5FB878':''}">[[${arttype.getTitle()}]]</font>
+        </li>
+        </a>
+
+      </ul>
+    </div>
+
+    <div class="whitebg lanmu"> <img th:src="@{/homestatic/images/lm01.jpg}">
+      <h1 th:text="${artt.getTitle()}">网页设计心得</h1>
+      <p th:text="${artt.getDescription()}"></p>
+    </div>
+    <div class="zhuanti whitebg">
+      <h2 class="htitle"><span class="hnav"><a href="/" target="_blank">更多</a></span>最新博文</h2>
+      <ul id="incomeNum">
+      </ul>
+      <div class="clearfix">
+        <p id="flagLoaded" style="display: none; text-align: center;">已全部加载</p>
+        <a id="flagLoad" style="display: none;" class="btn btn-secondary float-right"
+           href="javascript:void(0)" onclick="nextPage()">点击更多 &rarr;</a>
+      </div>
+    </div>
+
+
+
+    <div class="zhuanti whitebg">
+      <h2 class="htitle"><span class="hnav"><a href="/" target="_blank">更多</a></span>最热博文</h2>
+      <ul id="incomeNumz">
+      </ul>
+      <div class="clearfix">
+        <p id="flagLoadedz" style="display: none; text-align: center;">已全部加载</p>
+        <a id="flagLoadz" style="display: none;" class="btn btn-secondary float-right"
+           href="javascript:void(0)" onclick="nextPagez()">点击更多 &rarr;</a>
+      </div>
+    </div>
+    
+    <!--bloglist end--> 
+  </div>
+  <div class="rbox">
+   <div th:include="home/head::right">
+
+   </div>
+
+
+
+
+  </div>
+</article>
+<footer th:include="home/footer::footer">
+</footer>
+<script  type="text/javascript">
+    var limit = 9;
+    var currentPage = 0;
+    var total;
+    $(function(){
+        bindList(0);
+        zrbindList(0);
+    });
+    function nextPage() {
+        bindList(currentPage)
+    }
+    function bindList(page) {
+        $.ajax({
+                url : '/blog?typeid=[[${pid}]]&type=zxarticle&limit=9&page='+ page,
+                method : 'get',
+                dataType : 'json',
+                success : function(data) {
+                    var rows = data.rows;
+                    total = data.total;
+                    var htmlText = "";
+                    for (i = 0; i < rows.length; i++) {
+                        htmlText += '<li> <i class="ztpic">';
+                        htmlText +='<a href="/info/'+rows[i].arId+'" >';
+                        htmlText +=' <img src="'+rows[i].litpic+'">'
+                        htmlText += '</a></i>';
+                        htmlText += ' <b>"'+rows[i].title+'"</b>';
+                        htmlText +=  '<span>"'+rows[i].description+'"</span>';
+                        htmlText += '  <a href="/info/'+rows[i].arId+'" class="readmore">文章阅读</a>';
+                        htmlText += '</li>';
+                    }
+                    $("#incomeNum").append(htmlText);
+                    document.getElementById("flagLoad").style.display = "block";
+                    currentPage++;
+                    if (total <= currentPage * limit) {
+                        //console.log(currentPage * limit);
+                        document.getElementById("flagLoaded").style.display = "block";
+                        document.getElementById("flagLoad").style.display = "none";
+                    }
+                }
+            });
+    }
+</script>
+
+<script  type="text/javascript">
+    var limitz = 9;
+    var currentPagez = 0;
+    var totalz;
+    function nextPagez() {
+        zrbindList(currentPagez)
+    }
+    function zrbindList(page) {
+        $.ajax({
+            url :  '/blog?typeid=[[${pid}]]&type=zrarticle&limit=9&page='+ page,
+            method : 'get',
+            dataType : 'json',
+            success : function(data) {
+                var rows = data.rows;
+                totalz = data.total;
+                var htmlText = "";
+                for (i = 0; i < rows.length; i++) {
+                    htmlText += '<li> <i class="ztpic">';
+                    htmlText +='<a href="/info/'+rows[i].arId+'" >';
+                    htmlText +=' <img src="'+rows[i].litpic+'">'
+                    htmlText += '</a></i>';
+                    htmlText += ' <b>"'+rows[i].title+'"</b>';
+                    htmlText +=  '<span>"'+rows[i].description+'"</span>';
+                    htmlText += '  <a href="/info/'+rows[i].arId+'" target="_blank" class="readmore">文章阅读</a>';
+                    htmlText += '</li>';
+                }
+                $("#incomeNumz").append(htmlText);
+                document.getElementById("flagLoadz").style.display = "block";
+                currentPagez++;
+                if (totalz <= currentPagez * limitz) {
+                    document.getElementById("flagLoadedz").style.display = "block";
+                    document.getElementById("flagLoadz").style.display = "none";
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

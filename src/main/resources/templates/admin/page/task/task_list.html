@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+  
+  <head th:include="/admin/page/task/header::listheader">
+
+  </head>
+  
+  <body th:inline="text" >
+
+  <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="/admin">首页</a>
+
+        <a th:each="menur:${daohang}" th:text="${menur.get('title')}" th:href="${menur.get('url')}">
+        </a>
+
+      </span>
+    <a class="layui-btn layui-btn-primary layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+      <i class="layui-icon" style="line-height:38px">ဂ</i></a>
+  </div>
+    <div id="appc" class="x-body">
+      <xblock>
+        <button type="button" @click="insert('/admin/task/add')" class="layui-btn">
+          <i class="layui-icon">&#xe608;</i> 添加
+        </button>
+        <button class="layui-btn">当前执行的任务<span class="layui-badge layui-bg-gray" >[[${countjob}]]个</span></button>
+      </xblock>
+      <table  class="layui-table layui-form">
+
+        <thead>
+          <tr>
+
+            <th>任务ID</th>
+            <th>任务名称</th>
+            <th>任务分组</th>
+            <th>cron表达式</th>
+            <th>任务类</th>
+            <th>创建时间</th>
+            <th>状态</th>
+            <th>操作</th></tr>
+        </thead>
+        <tbody >
+          <tr v-for="task in tasks">
+            <td>{{task.taskId}}</td>
+            <td>{{task.jobName}}</td>
+            <td>{{task.jobGroup}}</td>
+            <td>{{task.cron}}</td>
+            <td>{{task.classmethod}}</td>
+            <td>{{task.createtime}}</td>
+            <td>
+              <input type="checkbox" :checked="task.state==1" :value="task.taskId" lay-filter="state" lay-skin="switch" lay-text="开|关">
+            </td>
+            <td class="td-manage">
+              <button @click="member_edit('/admin/task/edit',task.taskId)" class="layui-btn layui-btn-xs ">修改</button>
+              <button @click="member_del(this,task.taskId)" class="layui-btn layui-btn-xs layui-btn-danger">删除</button>
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+
+  <script th:src="@{/static/js/vue.js}"></script>
+  <script>
+      layui.use(['layer','form','element'], function(){
+          var form = layui.form,layer = layui.layer,element = layui.element;
+
+          form.on('switch(state)',function (data) {
+
+              $.ajax({
+                  url:'/admin/task/state',
+                  method:'post',
+                  dataType:'json',
+                  data:{id:data.elem.value,state:data.elem.checked},
+                  success:function (result) {
+                      if(result.code==200){
+                          layer.msg(result.msg);
+                      }else if (result.code==500){
+                          layer.msg(result.msg);
+                      }else if(result.hashMap.code=='999'){
+                          layer.msg(result.hashMap.msg);
+                      }
+                  }
+              })
+          })
+      });
+      var vueq = new Vue({
+          el:"#appc",
+          data:{
+              tasks:[]
+          },mounted:function() {
+              _this=this;
+              $.ajax({
+                  url:'/admin/task/selectall',
+                  method:'get',
+                  dateType:'json',
+                  success:function (data) {
+                      _this.tasks=data;
+                  }
+              });
+          },
+          methods:{
+              member_del:function(obj,id) {
+                  layer.confirm('确认要删除此任务吗？',function(index){
+                      $.ajax({
+                          url:'/admin/task/delete',
+                          method:'post',
+                          dateType:'json',
+                          data:{taskid:id},
+                          success:function (data) {
+                              if(data.code=='200'){
+                                  msge(data.msg);
+                              }else if(data.code=='500'){
+                                  layer.msg(data.msg)
+                              }else if(data.hashMap.code=='999'){
+                                  layer.msg(data.hashMap.msg);
+                              }
+                          }
+                      })
+
+                  });
+              },insert:function (url) {
+                  layer.open({
+                      type: 2,
+                      area: [($(window).width()*0.9)+'px',($(window).height() - 50)+'px'],
+                      fix: false, //不固定
+                      maxmin: true,
+                      shadeClose: true,
+                      shade:0.4,
+                      title: "新增",
+                      content: url
+                  });
+
+              },
+              member_edit:function (url,id) {
+                  layer.open({
+                      type: 2,
+                      area: [($(window).width()*0.9)+'px',($(window).height() - 50)+'px'],
+                      fix: false, //不固定
+                      maxmin: true,
+                      shadeClose: true,
+                      shade:0.4,
+                      title: "修改",
+                      content: url+"?id="+id
+                  });
+              }
+          }
+
+      });
+
+
+
+
+
+
+      function msge(data) {
+          layui.use('layer', function() {
+              var layer = layui.layer;
+              layer.msg(data);
+              setTimeout('window.location.reload()',2000);
+          })
+      }
+
+  </script>
+  </body>
+
+</html>

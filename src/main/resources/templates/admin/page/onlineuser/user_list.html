@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>在线用户</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" th:href="@{/static/favicon.ico}" type="image/x-icon" />
+    <link rel="stylesheet" th:href="@{/static/css/font.css}">
+    <link rel="stylesheet" th:href="@{/static/css/xadmin.css}">
+    <link rel="stylesheet" th:href="@{/static/lib/layui/css/layui.css}">
+    <script th:src="@{/static/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/lib/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/static/js/xadmin.js}"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body  >
+
+  <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="/admin">首页</a>
+
+        <a th:each="menur:${daohang}" th:text="${menur.get('title')}" th:href="${menur.get('url')}">
+        </a>
+
+      </span>
+    <a class="layui-btn layui-btn-primary layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+      <i class="layui-icon" style="line-height:38px">ဂ</i></a>
+  </div>
+    <div id="appc" class="x-body">
+      <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so">
+          <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
+          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+      </div>
+      <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量下线</button>
+        <button class="layui-btn">当前在线用户<span class="layui-badge layui-bg-gray" th:text="|${zxuser} 人|">1</span></button>
+      </xblock>
+      <table  class="layui-table">
+        <thead>
+          <tr>
+            <th>
+              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th>用户ID</th>
+            <th>系列号</th>
+            <th>用户名称</th>
+            <th>是否管理员</th>
+            <th>主机ip</th>
+            <th>登陆时间</th>
+            <th>最近访问时间</th>
+            <th>过期时间</th>
+            <th>状态</th>
+            <th>操作</th></tr>
+        </thead>
+        <tbody style="text-align: center">
+          <tr v-for="row in userline">
+            <td>
+              <div class="layui-unselect layui-form-checkbox" lay-skin="primary" v-bind:data-id='row.xhid'><i class="layui-icon">&#xe605;</i></div>
+            </td>
+            <td>{{row.user_id}}</td>
+            <td>{{row.xhid}}</td>
+            <td>{{row.username}}</td>
+            <td v-if="row.isadmin==1">
+              <span class="layui-badge">是</span>
+            </td>
+            <td v-else>
+              <span class="layui-badge layui-bg-green">否</span>
+            </td>
+            <td>{{row.host}}</td>
+            <td>{{row.logindatetime}}</td>
+            <td>{{row.lastdatetime}}</td>
+            <td>{{row.logoutdatetime}}</td>
+            <td v-if="row.status==1" class="td-status">
+              <span class="layui-btn  layui-btn-normal layui-btn-mini">
+                              在线
+              </span>
+          </td>
+            <td v-else class="td-status">
+              <span class="layui-btn layui-btn-danger layui-btn-mini">
+                             离线
+              </span>
+            </td>
+            <td class="td-manage">
+              <a title="踢出" @click="member_del(this,row.xhid)" href="javascript:;">
+                <i class="layui-icon">&#xe640;</i>
+              </a>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+
+    </div>
+
+    <script th:src="@{/static/js/vue.js}">
+    </script>
+    <script>
+        var vueq = new Vue({
+            el:"#appc",
+            data:{
+                userline:''
+            },
+            methods:{
+                show:function () {
+                    _this=this;
+                    $.ajax({
+                        url:'/admin/useronline/selectuseronline',
+                        method:'get',
+                        dateType:'json',
+                        success:function (data) {
+                            _this.userline=data;
+                            console.log(data);
+                        }
+                    });
+                },
+            member_del:function(obj,id) {
+                layer.confirm('确认要移除此用户吗？',function(index){
+
+                    $.ajax({
+                        url:'/admin/useronline/delete',
+                        method:'post',
+                        dateType:'json',
+                        data:{sessionid:id},
+                        success:function (data) {
+                            if(data.code=='200'){
+                                layer.msg(data.msg);
+                            }else if(data.code=='500'){
+                                layer.msg(data.msg)
+                            }else if(data.hashMap.code=='999'){
+                                layer.msg(data.hashMap.msg);
+                            }
+                        }
+                    })
+
+                });
+        }
+        }
+
+        });
+
+
+        layui.use(['laydate','layer'], function(){
+        var laydate = layui.laydate,layer = layui.layer;
+          vueq.show();
+
+        });
+
+
+
+        function msge(data) {
+            layui.use('layer', function() {
+                var layer = layui.layer;
+                layer.msg(data);
+            })
+        }
+
+
+      function delAll (argument) {
+
+        var datasc = tableCheck.getData();
+  
+        layer.confirm('确认要移除吗？',function(index){
+            //捉到所有被选中的，发异步进行删除
+            $.ajax({
+                url:'/admin/useronline/deleteall',
+                method:'post',
+                dateType:'json',
+                data:{datas:datasc.toString()},
+                success:function (data) {
+                    if(data.code==200){
+                        msge('已移除!');
+                    }else if(data.code==500){
+                        msge("移除失败")
+                    }else if(data.hashMap.code=='999'){
+                        msge(data.hashMap.msg);
+                    }
+                }
+            })
+        });
+      }
+    </script>
+  </body>
+
+</html>

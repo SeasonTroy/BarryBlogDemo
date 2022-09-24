@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:include="/admin/page/task/header::addheader">
+</head>
+<body style="margin-top:20px;" class="childrenBody">
+	<form class="layui-form" style="width:80%;">
+		<div class="layui-form-item">
+			<label class="layui-form-label">任务名称</label>
+			<div class="layui-input-block">
+				<input type="text" name="jobName" class="layui-input linksName" lay-verify="required" placeholder="请输入任务名称">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">任务分组</label>
+			<div class="layui-input-block">
+				<input type="tel" name="jobGroup" class="layui-input linksUrl" lay-verify="required" placeholder="请输入任务分组">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<label class="layui-form-label">cron</label>
+				<div class="layui-input-inline">
+					<input type="text" name="cron" placeholder="cron表达式" class="layui-input linksTime" lay-verify="required" >
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">任务类名</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input masterEmail" name="classmethod" lay-verify="required" placeholder="请输入需要执行的任务全类名">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">任务描述</label>
+			<div class="layui-input-block">
+				<textarea placeholder="任务描述" name="description" class="layui-textarea linksDesc"></textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">状态</label>
+			<div class="layui-input-block">
+				<input type="checkbox" checked  value="1"  name="state" lay-text="开始|关闭" lay-skin="switch">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit lay-filter="addtask">立即提交</button>
+		    </div>
+		</div>
+	</form>
+	<script th:src="@{/static/js/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
+	<script >
+        layui.use(['form','layer','jquery'],function(){
+            var form = layui.form(),
+                layer = layui.layer,
+                $ = layui.jquery;
+
+            form.on("submit(addtask)",function(data){
+                $.ajax({
+					url:'/admin/task/insert',
+					method:'post',
+					dataType:'json',
+					data:data.field,
+					success:function (datas) {
+                        if(datas.code==200){
+                            window.parent.msge("新增成功");
+                            var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+
+                        }else if(datas.code==500){
+                            window.parent.msge("新增失败");
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }else if(datas.hashMap.code=='999'){
+                            window.parent.msge(datas.hashMap.msg);
+						};
+
+                    },error:function () {
+						layer.msg("网络错误");
+                    }
+				})
+
+
+                return false;
+            })
+
+        })
+	</script>
+</body>
+</html>

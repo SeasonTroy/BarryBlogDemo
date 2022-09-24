@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<title>部门修改</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" th:href="@{/static/layui/css/layui.css}" media="all" />
+	<link rel="stylesheet" href="//at.alicdn.com/t/font_eolqem241z66flxr.css" media="all" />
+</head>
+<body style="margin-top:20px;" class="childrenBody">
+	<form class="layui-form" style="width:80%;">
+		<div class="layui-form-item">
+			<label class="layui-form-label">部门名称</label>
+			<div class="layui-input-block">
+				<input type="hidden" th:value="${dept.getDeptId()}" name="deptId">
+				<input type="text" name="name" th:value="${dept.getName()}" class="layui-input linksName" lay-verify="required" placeholder="请输入部门名称">
+			</div>
+		</div>
+
+		<div class="layui-form-item">
+				<label class="layui-form-label">排序</label>
+				<div class="layui-input-inline">
+					<input type="text" name="num" th:value="${dept.getNum()}" class="layui-input linksTime" lay-verify="required" >
+				</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">部门状态</label>
+			<div class="layui-input-block">
+				<input type="checkbox" th:checked="${dept.getIsDelete()}==1"  name="isDelete" lay-skin="switch">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit  lay-filter="edit">立即提交</button>
+		    </div>
+		</div>
+	</form>
+
+
+</body>
+<script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
+<script th:src="@{/static/js/jquery.min.js}"></script>
+<script >
+    layui.use(['form','layer','jquery'],function(){
+        var form = layui.form(),
+            layer = layui.layer,
+            $ = layui.jquery;
+
+        form.on("submit(edit)",function(data){
+            $.ajax({
+                url:'/admin/dept/update',
+                method:'post',
+                dataType:'json',
+                data:data.field,
+                success:function (datas) {
+                    if(datas.code==200){
+                        window.parent.msge("修改成功");
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+
+                    }else if(datas.code==500){
+                        window.parent.msge("修改失败");
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+
+                    }else if(datas.hashMap.code=='999'){
+                         layer.msg(datas.hashMap.msg);
+                    };
+
+                },error:function () {
+                    layer.msg("网络错误");
+                }
+            })
+
+
+            return false;
+        })
+
+    })
+</script>
+</html>

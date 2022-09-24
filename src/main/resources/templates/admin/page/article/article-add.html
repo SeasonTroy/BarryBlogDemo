@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>文章添加</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" th:href="@{/static/css/font.css}">
+    <link rel="stylesheet" th:href="@{/static/css/xadmin.css}">
+
+    <script th:src="@{/static/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/lib/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/static/js/xadmin.js}"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+      <script type="text/javascript" charset="utf-8" th:src="@{/static/ueditor/ueditor.config.js}"></script>
+      <script type="text/javascript" charset="utf-8" th:src="@{/static/ueditor/ueditor.all.js}"> </script>
+      <script type="text/javascript" charset="utf-8" th:src="@{/static/ueditor/lang/zh-cn/zh-cn.js}"></script>
+  </head>
+  
+  <body>
+  <div class="layui-tab">
+      <ul class="layui-tab-title">
+          <li class="layui-this">博客文章</li>
+          <li>资源</li>
+          <li>文章资源</li>
+      </ul>
+      <div class="layui-tab-content">
+          <div class="layui-tab-item layui-show">
+             <!--文章开始-->
+              <div class="x-body">
+                  <form class="layui-form">
+                      <div style=" margin-top:-20px;" class="layui-form-item">
+                          <label  class="layui-form-label">
+                              <input type="hidden"  name="type" value="1"><!--文章-->
+                          </label>
+                          <div class="layui-input-inline">
+                              <div class="layui-upload-list">
+                                  <input type="hidden" id="litpic" name="litpic" value="">
+                                  <img width="120px" class="layui-upload-img" id="demo">
+                                  <p id="demoText"></p>
+                              </div>
+                              <div class="layui-upload-drag" id="test10">
+                                  <i class="layui-icon"></i>
+                                  <p>缩略图，点击或将图片拖拽到此处</p>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <div class="layui-inline">
+                              <label class="layui-form-label">
+                                  <span class="x-red">*</span>资源标题
+                              </label>
+                              <div class="layui-input-inline">
+                                  <input type="text" name="title" placeholder="请输入文章标题" lay-verify="required" autocomplete="off" class="layui-input">
+                              </div>
+                          </div>
+                          <div class="layui-inline">
+                              <label class="layui-form-label">
+                                  <span class="x-red">*</span>所属栏目
+                              </label>
+                              <div style="z-index:99999" class="layui-input-inline">
+                                  <select style="z-index:999;" id="arttypeId" name="arttypeId" class="valid">
+                                      <option th:each="arttype:${arttypes}" th:value="${arttype.getActtypeId()}" th:text="${arttype.getTitle()}" value="shentong">申通物流</option>
+                                  </select>
+                              </div>
+                          </div>
+                          <div class="layui-inline">
+                              <label class="layui-form-label"> 优先级</label>
+                              <div class="layui-input-inline">
+                                  <input type="text" id="phone" name="weight" placeholder="排序"  autocomplete="off" class="layui-input">
+                              </div>
+                          </div>
+                          <div class="layui-inline">
+                              <label  class="layui-form-label">
+                                  点击量
+                              </label>
+                              <div class="layui-input-inline">
+                                  <input type="text"  id="clickcount" placeholder="不输入默认1-200随机" name="clickcount"
+                                         class="layui-input">
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">
+                              <span class="x-red">*</span>描述
+                          </label>
+                          <div class="layui-input-block">
+                              <textarea id="descr" name="description" lay-verify="description" placeholder="请输入内容最好不要超过100字" class="layui-textarea"></textarea>
+                          </div>
+                      </div>
+
+                      <div class="layui-form-item layui-form-text">
+                          <label  class="layui-form-label">
+                              文章内容
+                          </label>
+                          <div class="layui-input-block">
+                              <textarea placeholder="请输入内容" id="editor"  name="context" class="layui-textarea"></textarea>
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">标签</label>
+                          <div class="layui-input-block">
+                              <input type="checkbox" th:each="tag:${tags}" name="tag"  th:value="${tag.getTagId()}" th:title="${tag.getTitle()}">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">评论</label>
+                          <div class="layui-input-block">
+                              <input type="checkbox" name="commentState" value="1" lay-skin="switch" lay-text="允许|禁止">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">
+                          </label>
+                          <button  class="layui-btn" lay-filter="add1" lay-submit="">
+                              新增
+                          </button>
+                      </div>
+                  </form>
+              </div>
+              <!--文章结束-->
+          </div>
+          <div class="layui-tab-item">
+              <!--资源开始-->
+              <div class="x-body">
+                  <form style=" margin-top:-20px;" class="layui-form">
+                      <div class="layui-form-item">
+                          <label  class="layui-form-label">
+                              <input type="hidden" name="type" value="2"><!--资源-->
+                          </label>
+                          <div class="layui-input-inline">
+                              <div class="layui-upload-list">
+                                  <input type="hidden" id="litpic1" name="litpic" value="">
+                                  <img width="120px" class="layui-upload-img" id="demo1">
+                                  <p id="demoText1"></p>
+                              </div>
+                              <div class="layui-upload-drag" id="test11">
+                                  <i class="layui-icon"></i>
+                                  <p>缩略图，点击或将图片拖拽到此处</p>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <div class="layui-inline">
+                              <label  class="layui-form-label">
+                                  <span class="x-red">*</span>资源标题
+                              </label>
+                              <div class="layui-input-inline">
+                                  <input type="text"  id="title" placeholder="请输入资源标题" name="title" required lay-verify="required"
+                                         class="layui-input">
+                              </div>
+                          </div>
+                          <div class="layui-inline">
+                              <label  class="layui-form-label">
+                                  <span class="x-red">*</span>所属栏目
+                              </label>
+                              <div class="layui-input-inline">
+                                  <select style="z-index:999;" id="arttypeId" name="arttypeId" class="valid">
+                                      <option th:each="arttype:${arttypes}" th:value="${arttype.getActtypeId()}" th:text="${arttype.getTitle()}" value="shentong">申通物流</option>
+                                  </select>
+                              </div>
+                          </div>
+                          <div class="layui-inline">
+                              <label for="phone" class="layui-form-label">
+                                  优先级
+                              </label>
+                              <div class="layui-input-inline">
+                                  <input type="text" id="" name="weight"
+                                         autocomplete="off" placeholder="不填默认99" class="layui-input">
+                              </div>
+                          </div>
+                          <div class="layui-inline">
+                              <label  class="layui-form-label">
+                                  点击量
+                              </label>
+                              <div class="layui-input-inline">
+                                  <input type="text"  id="clickcount" placeholder="不输入默认1-200随机" name="clickcount"
+                                         class="layui-input">
+                              </div>
+                          </div>
+
+                      </div>
+
+                      <div class="layui-form-item">
+                          <label  class="layui-form-label">
+                              <span class="x-red">*</span>资源地址
+                          </label>
+                          <div class="layui-input-block">
+                              <input type="text"  id="downloadurl" placeholder="请输入有效地址" name="downloadurl" required lay-verify="required"
+                                     class="layui-input">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label  class="layui-form-label">
+                              <span class="x-red">*</span>资源密码
+                          </label>
+                          <div class="layui-input-inline">
+                              <input type="text"  id="downloadpassword" placeholder="请输入有效地址" name="downloadpassword" required lay-verify="required"
+                                     class="layui-input">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">描述</label>
+                          <div class="layui-input-block">
+                              <textarea id="descr1" lay-verify="description1" name="description" placeholder="请输入内容最好不要超过100字" class="layui-textarea"></textarea>
+                          </div>
+
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">所需积分</label>
+                              <div class="layui-input-inline">
+                                  <select name="jf">
+                                      <option value="0">免费资源</option>
+                                      <option value="1">1积分</option>
+                                      <option value="2">2积分</option>
+                                      <option value="3">3积分</option>
+                                      <option value="4">4积分</option>
+                                      <option value="5">5积分</option>
+                                      <option value="6">6积分</option>
+                                      <option value="7">7积分</option>
+                                      <option value="8">8积分</option>
+                                      <option value="9">9积分</option>
+                                      <option value="10">10积分</option>
+                                  </select>
+                              </div>
+                          </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">标签</label>
+                          <div class="layui-input-block">
+                              <input type="checkbox" th:each="tag:${tags}" name="tag"  th:value="${tag.getTagId()}" th:title="${tag.getTitle()}">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                           <div class="layui-inline">
+                              <label class="layui-form-label">评论</label>
+                              <div class="layui-input-block">
+                                  <input type="checkbox" value="1" name="commentState" lay-skin="switch" lay-text="允许|禁止">
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">
+                          </label>
+                          <button  class="layui-btn" lay-filter="add2" lay-submit="">
+                              新增
+                          </button>
+                      </div>
+                  </form>
+              </div>
+
+              <!--资源结束-->
+          </div>
+          <div class="layui-tab-item">
+              <!--资源文章-->
+              <div class="x-body">
+                  <form class="layui-form">
+                      <div style=" margin-top:-20px;"  class="layui-form-item">
+                          <label  class="layui-form-label">
+                              <input type="hidden"  name="type" value="3"><!--资源文章-->
+                          </label>
+                          <div class="layui-input-inline">
+                              <div class="layui-upload-list">
+                                  <input type="hidden" id="litpic2" name="litpic" value="">
+                                  <img width="120px"  class="layui-upload-img" id="demo2">
+                                  <p id="demoText2"></p>
+                              </div>
+                              <div style="" class="layui-upload-drag" id="test12">
+                                  <i class="layui-icon"></i>
+                                  <p>缩略图，点击或将图片拖拽到此处</p>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <div class="layui-inline">
+                              <label class="layui-form-label">
+                                  <span class="x-red">*</span>资源标题
+                              </label>
+                              <div class="layui-input-inline">
+                                  <input type="text" name="title" placeholder="请输入文章标题" lay-verify="required" autocomplete="off" class="layui-input">
+                              </div>
+                          </div>
+                          <div class="layui-inline">
+                              <label class="layui-form-label">
+                                  <span class="x-red">*</span>
+                                  所属栏目
+                              </label>
+                              <div style="z-index:99999" class="layui-input-inline">
+                                  <select style="z-index:999;" id="arttypeId" name="arttypeId" class="valid">
+                                      <option th:each="arttype:${arttypes}" th:value="${arttype.getActtypeId()}" th:text="${arttype.getTitle()}" value="shentong">申通物流</option>
+                                  </select>
+                              </div>
+                          </div>
+                          <div class="layui-inline">
+                              <label class="layui-form-label">  优先级</label>
+                              <div class="layui-input-inline">
+                                  <input type="text" id="phone" name="weight" placeholder="不填默认99"  autocomplete="off" class="layui-input">
+                              </div>
+                          </div>
+                          <div class="layui-inline">
+                              <label  class="layui-form-label">
+                                  点击量
+                              </label>
+                              <div class="layui-input-inline">
+                                  <input type="text"  id="clickcount" placeholder="不输入默认1-200随机" name="clickcount"
+                                         class="layui-input">
+                              </div>
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label  class="layui-form-label">
+                              <span class="x-red">*</span>资源地址
+                          </label>
+                          <div class="layui-input-block">
+                              <input type="text"  id="downloadurl" placeholder="请输入有效地址" name="downloadurl" required lay-verify="required"
+                                     class="layui-input">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label  class="layui-form-label">
+                              <span class="x-red">*</span>资源密码
+                          </label>
+                          <div class="layui-input-inline">
+                              <input type="text"  id="downloadpassword" placeholder="请输入有效地址" name="downloadpassword" required lay-verify="required"
+                                     class="layui-input">
+                          </div>
+                      </div>
+
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">描述</label>
+                          <div class="layui-input-block">
+                              <textarea id="descr2" name="description" lay-verify="description2" placeholder="请输入内容最好不要超过100字" class="layui-textarea"></textarea>
+                          </div>
+                      </div>
+
+                      <div class="layui-form-item layui-form-text">
+                          <label  class="layui-form-label">
+                              文章内容
+                          </label>
+                          <div class="layui-input-block">
+                              <textarea placeholder="请输入内容" id="editor1"  name="context" class="layui-textarea"></textarea>
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">所需积分</label>
+                          <div class="layui-input-inline">
+                              <select name="jf">
+                                  <option value="0">免费资源</option>
+                                  <option value="1">1积分</option>
+                                  <option value="2">2积分</option>
+                                  <option value="3">3积分</option>
+                                  <option value="4">4积分</option>
+                                  <option value="5">5积分</option>
+                                  <option value="6">6积分</option>
+                                  <option value="7">7积分</option>
+                                  <option value="8">8积分</option>
+                                  <option value="9">9积分</option>
+                                  <option value="10">10积分</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">标签</label>
+                          <div class="layui-input-block">
+                              <input type="checkbox" th:each="tag:${tags}" name="tag"  th:value="${tag.getTagId()}" th:title="${tag.getTitle()}"/>
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <div class="layui-inline">
+                              <label class="layui-form-label">评论</label>
+                              <div class="layui-input-block">
+                                  <input type="checkbox"   lay-skin="switch" lay-text="允许|禁止"/>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">
+                          </label>
+                          <button  class="layui-btn" lay-filter="add3" lay-submit="">
+                              新增
+                          </button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+        <script>
+        layui.use(['form','layer','upload','layedit'], function() {
+                var form = layui.form, layer = layui.layer, upload = layui.upload, $ = layui.jquery,layedit = layui.layedit;
+                //自定义验证规则
+
+             /*文章layui富文本*/
+            var build1 = layedit.build('descr',{
+                tool: ['left', 'center', 'right', '|', 'face'],
+                 height:100,
+                    uploadImage: {
+                        url: '' //接口url
+                        ,type: '' //默认post
+                    }
+                }
+                ); //建立编辑器
+            /*资源*/
+            var build2 = layedit.build('descr1',{
+
+                    height:200,
+                    uploadImage: {
+                        url: '/admin/article/uploads/layui' //接口url
+                        ,type: 'post' //默认post
+                    }
+                }
+            );
+            //资源文章
+            var build3 = layedit.build('descr2',{
+                tool: ['left', 'center', 'right', '|', 'face'],
+                    height:200,
+                    uploadImage: {
+                        url: '/admin/article/uploads/layui' //接口url
+                        ,type: 'post' //默认post
+                    }
+                }
+            );
+
+
+            var ue = UE.getEditor('editor');
+            UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+            UE.Editor.prototype.getActionUrl = function(action) {
+                if (action == 'uploadimage' || action == 'uploadscrawl') {
+                    return '/admin/article/uploads/ueditor';
+                } else {
+                    return this._bkGetActionUrl.call(this, action);
+                }
+            }
+            var uec = UE.getEditor('editor1');
+
+
+         /*缩略图上传*/
+            upload.render({
+                elem: '#test10'
+                ,url: '/admin/article/upload',
+                size: 120,
+                before: function(obj){
+                    //预读本地文件示例，不支持ie8
+                    obj.preview(function(index, file, result){
+                        $('#demo').attr('src', result); //图片链接（base64）
+                    });
+                },
+                done: function(res){
+                    if(res.code == 500){
+                        return layer.msg('上传失败');
+                    }else{
+                        $("#test10").hide();
+                        //parent.$('#litpicsdelete').val(parent.$('#litpicsdelete').val()+","+res.url);//往父元素添加值
+                        $("#litpic").val(res.url);
+                        layer.msg('上传成功');
+
+                    }
+                    console.log(res.msg)
+                } ,error: function(){
+                    //演示失败状态，并实现重传
+                    var demoText = $('#demoText');
+                    demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                    demoText.find('.demo-reload').on('click', function(){
+                        uploadInst.upload();
+                    });
+                }
+            })
+
+            /*缩略图上传*/
+            upload.render({
+                elem: '#test11'
+                ,url: '/admin/article/upload',
+                size: 120,
+                before: function(obj){
+                    //预读本地文件示例，不支持ie8
+                    obj.preview(function(index, file, result){
+                        $('#demo1').attr('src', result); //图片链接（base64）
+                    });
+                },
+                done: function(res){
+                    if(res.code == 500){
+                        return layer.msg('上传失败');
+                    }else{
+                        $("#test11").hide();
+                       // parent.$('#litpicsdelete').val(parent.$('#litpicsdelete').val()+","+res.url);//往父元素添加值
+                        $("#litpic1").val(res.url);
+                        layer.msg('上传成功');
+
+                    }
+                    console.log(res.msg)
+                } ,error: function(){
+                    //演示失败状态，并实现重传
+                    var demoText = $('#demoText1');
+                    demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                    demoText.find('.demo-reload').on('click', function(){
+                        uploadInst.upload();
+                    });
+                }
+            })
+
+            /*缩略图上传*/
+            upload.render({
+                elem: '#test12'
+                ,url: '/admin/article/upload',
+                size: 120,
+                before: function(obj){
+                    //预读本地文件示例，不支持ie8
+                    obj.preview(function(index, file, result){
+                        $('#demo2').attr('src', result); //图片链接（base64）
+                    });
+                },
+                done: function(res){
+                    if(res.code == 500){
+                        return layer.msg('上传失败');
+                    }else{
+                        $("#test12").hide();
+                       // parent.$('#litpicsdelete').val(parent.$('#litpicsdelete').val()+","+res.url);//往父元素添加值
+                        $("#litpic2").val(res.url);
+                        layer.msg('上传成功');
+
+                    }
+                    console.log(res.msg)
+                } ,error: function(){
+                    //演示失败状态，并实现重传
+                    var demoText = $('#demoText2');
+                    demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                    demoText.find('.demo-reload').on('click', function(){
+                        uploadInst.upload();
+                    });
+                }
+            })
+
+            form.verify({
+                description: function(value) {
+                    // 将富文本编辑器的值同步到之前的textarea中
+                    layedit.sync(build1);
+                },
+                description1: function(value) {
+                    // 将富文本编辑器的值同步到之前的textarea中
+                    layedit.sync(build2);
+                },
+                description2: function(value) {
+                    // 将富文本编辑器的值同步到之前的textarea中
+                    layedit.sync(build3);
+                }
+            });
+
+          //监听文章提交
+          form.on('submit(add1)', function(data){
+              ajaxsubmit(data)
+            console.log(data.field);
+            return false;
+          });
+            //监听资源提交
+          form.on('submit(add2)', function(data){
+                ajaxsubmit(data)
+                console.log(data.field);
+                return false;
+            });
+            //监听文章资源提交
+          form.on('submit(add3)', function(data){
+                ajaxsubmit(data)
+                console.log(data.field);
+                return false;
+            });
+
+        });
+
+        function ajaxsubmit(data) {
+            var industryObj = $('input[name="tag"]');
+            var check_val = [];
+            for(k in industryObj){
+                if(industryObj[k].checked){
+                    check_val.push(industryObj[k].value);
+                }
+            }
+            data.field.tag = check_val;//解决layui checked提交只有一个值的问题
+
+            $.ajax({
+                url:'/admin/article/insert',
+                method:'post',
+                dataType:'json',
+                traditional: true,
+                data:data.field,
+                success:function (data) {
+                    if(data.code==200){
+                        layer.msg("发布成功",{icon:1,time:3000});
+                        var index = parent.layer.getFrameIndex(window.name);
+                          parent.layer.close(index);
+
+                    }else{
+                        layer.msg(data.msg,{icon:1,time:3000},function () {
+
+                        })
+                    }
+
+                }
+            })
+        }
+
+    </script>
+  </body>
+
+</html>

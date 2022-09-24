@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bootdang.system.mapper.ArttypeMapper">
+
+    <resultMap id="arttype" type="com.bootdang.system.entity.Arttype">
+        <id property="acttypeId" column="acttype_id" jdbcType="INTEGER"/>
+        <result property="title" jdbcType="VARCHAR" column="title"/>
+        <result property="sort" column="sort" jdbcType="INTEGER"/>
+        <result property="createtime" column="createtime" jdbcType="TIMESTAMP"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="click" column="click" jdbcType="INTEGER"/>
+        <result property="pinyin" column="pinyin" jdbcType="VARCHAR"/>
+        <result property="parentid" column="parentid" jdbcType="INTEGER"/>
+        <association property="ParentTitle" jdbcType="INTEGER" column="parentid" select="selectparentid"/>
+    </resultMap>
+    <select id="selectbyId" resultType="com.bootdang.system.entity.Arttype">
+        select*from sys_arttype where acttype_id=#{param1}
+    </select>
+    <select id="selectAll" resultMap="arttype">
+        select*from sys_arttype
+    </select>
+
+    <select id="selectparentid" resultType="string">
+        select title from sys_arttype where acttype_id=${_parameter}
+    </select>
+</mapper>

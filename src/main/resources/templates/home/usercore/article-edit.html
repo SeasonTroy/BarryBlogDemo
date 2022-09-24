@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>文章审核</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" th:href="@{/static/css/font.css}">
+    <link rel="stylesheet" th:href="@{/static/css/xadmin.css}">
+
+    <script th:src="@{/static/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/lib/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/static/js/xadmin.js}"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <script type="text/javascript" charset="utf-8" th:src="@{/static/ueditor/ueditor.config.js}"></script>
+    <script type="text/javascript" charset="utf-8" th:src="@{/static/ueditor/ueditor.all.js}"> </script>
+    <script type="text/javascript" charset="utf-8" th:src="@{/static/ueditor/lang/zh-cn/zh-cn.js}"></script>
+</head>
+<body style="background:#ffffff">
+<div class="x-body">
+    <form class="layui-form">
+        <div style="" class="layui-form-item">
+            <label  class="layui-form-label">
+                <input type="hidden"  name="arId" th:value="${article.getArId()}">
+            </label>
+            <div class="layui-input-inline">
+                <input type="hidden" id="litpic" name="litpic" th:value="${article.getLitpic()}">
+                    <img width="200px" th:src="${article.getLitpic()}" class="layui-upload-img" id="demo">
+                <button type="button" style="margin-top:15px;" class="layui-btn layui-btn-danger" id="test7"><i class="layui-icon"></i>修改图片</button>
+            </div>
+
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>[资源/文章]标题
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" name="title" th:value="${article.getTitle()}" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-inline">
+                <label class="layui-form-label">优先级</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="weight" th:value="${article.getWeight()}" placeholder="排序"  autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label  class="layui-form-label">
+                    点击量
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text"  th:value="${article.getClickcount()}" placeholder="不输入默认1-200随机" name="clickcount"
+                           class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div th:if="${article.getType()}!=1" class="layui-form-item">
+            <label  class="layui-form-label">
+                <span class="x-red">*</span>资源地址
+            </label>
+            <div class="layui-input-block">
+                <input type="text" name="dowloadurl"  placeholder="请输入有效地址" th:value="${article.getDownloadurl()}" class="layui-input">
+            </div>
+        </div>
+        <div th:if="${article.getType()}!=1" class="layui-form-item">
+            <label  class="layui-form-label">
+                <span class="x-red">*</span>资源密码
+            </label>
+            <div class="layui-input-inline">
+                <input type="text"  name="downloadpassword" id="downloadpassword" th:value="${article.getDownloadpassword()}"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>描述
+            </label>
+            <div class="layui-input-block">
+                <textarea id="descr" th:text="${article.getDescription()}" name="description" lay-verify="description" placeholder="请输入内容最好不要超过100字" class="layui-textarea"></textarea>
+            </div>
+        </div>
+
+        <div th:if="${article.getType()}!=2" class="layui-form-item layui-form-text">
+            <label  class="layui-form-label">
+                文章内容
+            </label>
+            <div class="layui-input-inline">
+                <textarea id="context" th:text="${article.getContext()}" name="context" ></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">标签</label>
+            <div class="layui-input-block">
+                <input type="checkbox" th:each="tag:${tags}" name="tag" th:checked="${#lists.contains(arttag,tag)}"  th:value="${tag.getTagId()}" th:title="${tag.getTitle()}"  >
+            </div>
+        </div>
+        <div th:if="${article.getType()}!=1" class="layui-form-item">
+            <label class="layui-form-label">所需积分</label>
+            <div class="layui-input-inline">
+                <select name="jf">
+                    <option value="0">免费资源</option>
+                    <option value="1">1积分</option>
+                    <option value="2">2积分</option>
+                    <option value="3">3积分</option>
+                    <option value="4">4积分</option>
+                    <option value="5">5积分</option>
+                    <option value="6">6积分</option>
+                    <option value="7">7积分</option>
+                    <option value="8">8积分</option>
+                    <option value="9">9积分</option>
+                    <option value="10">10积分</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">评论</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="commentState" th:checked="${article.getCommentState()}" value="1" lay-skin="switch" lay-text="允许|禁止">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+            </label>
+            <button  class="layui-btn" lay-filter="sub" lay-submit="">
+               修改
+            </button>
+        </div>
+    </form>
+
+</div>
+    <script th:inline="javascript">
+    layui.use(['form','layer','upload','layedit'], function() {
+
+        var form = layui.form, layer = layui.layer, upload = layui.upload, $ = layui.jquery,layedit = layui.layedit;
+        //自定义验证规则
+        /*文章layui富文本*/
+       var build = layedit.build('descr',{
+                tool: ['left', 'center', 'right', '|'],
+                height:100,
+                uploadImage: {
+                    url: '' //接口url
+                    ,type: '' //默认post
+                }
+            }
+        );
+        var ue = UE.getEditor('context',{
+            initialFrameWidth : 800,
+            initialFrameHeight: 600,
+        });
+        UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+
+
+        UE.Editor.prototype.getActionUrl = function(action) {
+            if (action == 'uploadimage' || action == 'uploadscrawl') {
+                return '/admin/article/uploads/ueditor';
+            } else {
+                return this._bkGetActionUrl.call(this, action);
+            }
+        }
+
+        form.verify({
+            description: function(value) {
+                // 将富文本编辑器的值同步到之前的textarea中
+                layedit.sync(build);
+            },
+
+        });
+        form.on('submit(sub)', function(data){
+            console.log(data.field);
+            if([[${article.getState()}]]!=1){
+                layer.msg("只能修改审核过的资源")
+            }else{
+            layer.msg('你确修改吗', {
+                time: 0 //不自动关闭
+                ,btn: ['确定', '再想想']
+                ,yes: function(index){
+
+                    var industryObj = $('input[name="tag"]');
+                    var check_val = [];
+                    for(k in industryObj){
+                        if(industryObj[k].checked){
+                            check_val.push(industryObj[k].value);
+                        }
+                    }
+                    data.field.tag = check_val;//解决layui checked提交只有一个值的问题
+
+                    $.ajax({
+                        url:'/admin/article/update',
+                        method:'post',
+                        dataType:'json',
+                        traditional: true,
+                        data:data.field,
+                        success:function (data) {
+                            if(data.code==200){
+
+                               layer.msg(data.msg,{icon:1,time:1000},function () {
+                                       parent.window.history.go(-1)
+                               }
+
+                               );
+                            }else if(data.code==500){
+                                layer.msg(data.msg,{icon:1,time:1000},function () {
+                                    parent.window.history.go(-1)})
+                            }else if(data.hashMap.code=='990'){
+                                layer.msg(data.hashMap.msg);
+                            }
+
+                        }
+                    })
+                }
+
+            })}
+            return false;
+        });
+
+        //设定文件大小限制
+        upload.render({
+            elem: '#test7'
+            ,url: '/admin/article/upload'
+            ,size: 120 //限制文件大小，单位 KB
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    $('#demo').attr('src', result); //图片链接（base64）
+                });
+            },done: function(res){
+                if(res.code == 500){
+                    return layer.msg('上传失败');
+                }else{
+                    $("#litpic").val(res.url);
+                    layer.msg('上传成功');
+
+                }
+            }
+        });
+
+    });
+
+
+     
+
+</script>
+</body>
+</html>

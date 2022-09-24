@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:include="home/head::head">
+</head>
+<style>
+   *{ margin:0px;padding:0px;}
+</style>
+<body>
+<header th:include="home/head::listheader" id="header">
+
+</header>
+     <div style="overflow: hidden; width:1200px; margin-top:10px; height:700px;  margin: 0 auto;">
+
+         <div style="width:100%;">
+             <div style="float:left; height:100%; width:200px;">
+                 <ul style="float:left; height:100%;height:700px" class="layui-nav layui-nav-tree " lay-filter="test">
+                     <!-- 侧边导航: <ul class="layui-nav layui-nav-tree layui-nav-side"> -->
+                     <li class="layui-nav-item layui-nav-itemed">
+                         <a target="usercore" th:href="|/userinfo?id=${session.User.getUserId()}|">个人中心</a>
+                     </li>
+                     <li class="layui-nav-item">
+                         <a href="javascript:;">我的关注</a>
+                     </li>
+                     <li class="layui-nav-item">
+                         <a href="">我的粉丝</a>
+                     </li>
+                     <li class="layui-nav-item">
+                         <a href="">我的收藏</a>
+                     </li>
+                     <li class="layui-nav-item">
+                         <a href="">我的标签</a>
+                     </li>
+                     <li class="layui-nav-item">
+                         <a target="usercore" href="/usercore/articlebk">我的博客</a>
+                     </li>
+                     <li class="layui-nav-item">
+                         <a target="usercore" href="/usercore/articlezy">我的资源</a>
+                     </li>
+                     <li class="layui-nav-item">
+                         <a href="">积分记录</a>
+                     </li>
+                     <li class="layui-nav-item">
+                         <a target="usercore" href="/usercore/add">发布文章/资源</a>
+                     </li>
+                 </ul>
+             </div>
+             <div style="float:left; height:700px;  border:#646464 1px solid; width:998px;">
+                <iframe width="100%" height="100%" name="usercore" th:src="|/userinfo?id=${session.User.getUserId()}|"></iframe>
+             </div>
+
+         </div>
+     </div>
+<div style="clear:both; margin-top:20px;"></div>
+<footer  th:include="home/footer::footer">
+</footer>
+</body>
+<script>
+    //注意：导航 依赖 element 模块，否则无法进行功能性操作
+    layui.use('element', function(){
+        var element = layui.element;
+
+        //…
+    });
+</script>
+</html>

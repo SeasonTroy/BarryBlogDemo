@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:include="home/head::head">
+<![endif]-->
+</head>
+<body th:inline="text">
+<!--top begin-->
+<header th:include="home/head::listheader" id="header">
+
+</header>
+
+<!--top end-->
+<article> 
+  <!--lbox begin-->
+  <div  class="lbox">
+    <div  style="clear:both;width:100%;  margin-bottom:20px; height:100px; background:#ffffff;">
+      <style>
+        .jk li{
+          color:#393D49;
+          font-size:16px;
+          float:left; margin-left:20px;  margin-top:15px;
+        }
+        .jk li:hover {
+          color:#5FB878;
+        }
+      </style>
+      <ul class="jk">
+        <a  th:each="arttype:${parentarttype}" th:href="|/zyfx/${ids}/${arttype.getActtypeId()}|"><li>
+          <font th:color="${arttype.getActtypeId()==pid?'#5FB878':''}">[[${arttype.getTitle()}]]</font>
+        </li>
+        </a>
+
+      </ul>
+    </div>
+
+    <div class="whitebg lanmu"> <img src="/homestatic/images/lm02.jpg">
+      <h1 th:text="${artt.getTitle()}"></h1>
+      <p th:text="${artt.getDescription()}"></p>
+    </div>
+    <div class="whitebg bloglist">
+      <h2 class="htitle">资源分享</h2>
+      <ul>
+        <!--单图-->
+        <li th:each="art:${articlestop}">
+          <h3 class="blogtitle"><a  th:href="'/info/'+${art.getArId()}" th:text="${art.getTitle()}" ></a></h3>
+          <span class="blogpic imgscale"><a  th:href="'/info/'+${art.getArId()}" th:title="${art.getTitle()}"><img width="100%" height="80px"  th:src="${art.getLitpic()}" alt=""></a></span>
+          <div class="blogtext" th:utext="${art.getDescription()}"></div>
+          <p class="bloginfo"><span th:text="${#temporals.format(art.getCreatetime(),'yyyy-MM-dd a HH:mm ')}"></span><span>【
+             <a th:if="${art.getIsFree()}==1"  th:href="'/info/'+${art.getArId()}">免费</a>
+             <a th:if="${art.getIsFree()}==0" >所需[[${art.getJf()}]]积分</a>
+            】</span></p>
+          <a  th:href="'/info/'+${art.getArId()}" class="viewmore">下载</a> </li>
+
+      </ul>
+      <!--pagelist-->
+      <div id="demo1"></div>
+      <!--pagelist end--> 
+    </div>
+    
+    <!--bloglist end--> 
+  </div>
+  <div class="rbox">
+      <div th:include="/home/head::right">
+
+      </div>
+
+   <!-- <div class="ad whitebg imgscale">
+      <ul>
+        <a href="/"><img src="images/ad.jpg"></a>
+      </ul>
+    </div>-->
+
+
+
+  </div>
+</article>
+<footer th:include="home/footer::footer">
+  </footer>
+</body>
+<script>
+    layui.use('laypage', function(){
+        var laypage = layui.laypage;
+
+        //执行一个laypage实例
+        laypage.render({
+            elem: 'demo1'
+            ,count: [[${pageinfo.getTotal()}]] //数据总数
+            ,limit:10
+            ,curr:[[${pageinfo.getPageNum()}]]
+            ,jump: function(obj,first){
+                if(!first){
+                    window.location.href="/zyfx/[[${ids}]][[${pid!=null?'/'+pid+'?':'?'}]]page="+obj.curr+"&limit="+obj.limit
+                }}
+        });
+    });
+</script>
+</html>

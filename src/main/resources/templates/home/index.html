@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:include="home/head::head">
+</head>
+<body>
+<!--top begin-->
+<header th:include="home/head::listheader" id="header">
+</header>
+
+<!--top end-->
+<article th:inline="text">
+  <!--lbox begin-->
+  <div class="lbox"> 
+    <!--banbox begin-->
+    <div class="banbox">
+      <div class="banner">
+        <div id="banner" class="fader">
+          <li th:each="wheel:${lunbo}" class="slide" ><a th:href="${wheel.getUrl()}" target="_blank"><img th:src="${wheel.getImageurl()}"></a></li>
+          <div class="fader_controls">
+            <div class="page prev" data-target="prev"></div>
+            <div class="page next" data-target="next"></div>
+            <ul class="pager_list">
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script></script>
+    <!--banbox end--> 
+    <!--headline begin-->
+    <div class="headline">
+      <ul>
+        <li  th:each="db:${dingbu}"><a th:href="'/info/'+${db.getArId()}" th:title="${db.getTitle()}"><img th:src="${db.getLitpic()}" th:alt="${db.getTitle()}"><span th:text="${db.getTitle()}"></span></a></li>
+      </ul>
+    </div>
+    <style>
+      .headline ul li {
+        text-align: center;
+        vertical-align: middle;
+      }
+
+    </style>
+    <!--headline end-->
+    <div class="clearblank"></div>
+    <div class="tab_box whitebg">
+      <div class="tab_buttons">
+        <ul>
+
+          <li th:each="arttype,ss:${arttypes}" th:class="${ss.index==0?'newscurrent':''}" th:text="${arttype.getTitle()}">工作日记</li>
+
+        </ul>
+      </div>
+      <div class="newstab">
+        <div  th:each="list:${listart}" class="newsitem">
+          <div class="newspic">
+            <ul>
+              <li  th:each="st:${list.get('list1')}"><a  th:href="'/info/'+${st.getArId()}"><img th:src="${st.getLitpic()}"><span th:text="${st.getTitle()}">个人博客，属于我的小世界！</span></a></li>
+            </ul>
+          </div>
+          <ul class="newslist">
+            <li th:each="st1:${list.get('list2')}"><i></i>
+              <a th:href="'/info/'+${st1.getArId()}">
+                <span th:text="${st1.getTitle()}"></span>
+              </a>
+              <p th:text="${st1.getDescription()}"></p>
+            </li>
+
+          </ul>
+        </div>
+
+
+
+      </div>
+    </div>
+    <!--tab_box end-->
+    <div class="zhuanti whitebg">
+      <h2 class="htitle"><span class="hnav"><a href="/jianluboke/2">阅读更多</a></span>热门文章</h2>
+      <ul>
+        <li th:each="ishot:${ishotclick}"> <i class="ztpic"><a  th:href="'/info/'+${ishot.getArId()}" ><img th:src="${ishot.getLitpic()}"></a></i> <b>[[${ishot.getTitle()}]]</b><span th:text="${ishot.getDescription()}"></span><a th:href="'/info/'+${ishot.getArId()}"  class="readmore">文章阅读</a> </li>
+
+      </ul>
+    </div>
+    <div  class="ad whitebg">
+
+      <img  th:src="${lunbo.get(0).getImageurl()}">
+
+    </div>
+    <div class="whitebg bloglist">
+      <h2 class="htitle">顶置资源文章</h2>
+      <ul>
+        <!--单图-->
+        <li th:each="art:${arttypestop}">
+          <h3 class="blogtitle"><a  th:href="'/info/'+${art.getArId()}" th:text="${art.getTitle()}" ></a></h3>
+          <span class="blogpic imgscale"><a  th:href="'/info/'+${art.getArId()}" th:title="${art.getTitle()}"><img style="height:100px" th:src="${art.getLitpic()}" alt=""></a></span>
+          <p class="blogtext" th:utext="${art.getDescription()}"></p>
+          <p class="bloginfo"><i th:class="${art.getUser().getIsVip()==1?'avatar':''}"><img th:src="${art.getUser().getLogo()}"></i><span th:text="${art.getUser().getUsername()}"></span><span th:text="${#temporals.format(art.getCreatetime(),'yyyy-MM-dd a HH:mm ')}"></span><span>【
+             <a th:if="${art.getIsFree()}==1"  th:href="'/info/'+${art.getArId()}">免费</a>
+             <a th:if="${art.getIsFree()}==0" >所需[[${art.getJf()}]]积分</a>
+            】</span></p>
+          <a  th:href="'/info/'+${art.getArId()}" th:text="${art.getType()==1?'阅读':'下载'}" class="viewmore">查看</a> </li>
+      </ul>
+    </div>
+    <!--bloglist end--> 
+  </div>
+  <div class="rbox">
+    <div class="card">
+      <h2>我的名片</h2>
+      <p>名称：[[${admin.getName()}]]</p>
+      <p>职业：[[${admin.getWork()}]]</p>
+      <p>现居：[[${admin.getProvince()}]]-[[${admin.getCity()}]]</p>
+      <p>Email：[[${admin.getEmail()}]]</p>
+      <ul class="linkmore">
+        <li><a href="http://www.dangyonghang.com" target="_blank" class="iconfont icon-zhuye" title="网站地址"></a></li>
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=496056171@qq.com" target="_blank" class="iconfont icon-youxiang" title="我的邮箱"></a></li>
+        <li><a href="http://wpa.qq.com/msgrd?v=3&uin=496056171&site=qq&menu=yes" target="_blank" class="iconfont icon---" title="QQ联系我"></a></li>
+        <li id="weixin"><a href="#" target="_blank" class="iconfont icon-weixin" title="关注我的微信"></a><i><img src="/static/images/wx.jpg"></i></li>
+      </ul>
+    </div>
+    <div th:include="home/head::right">
+
+    </div>
+
+    <div class="links whitebg">
+      <h2 class="htitle">友情链接</h2>
+      <ul>
+        <li th:each="link:${links}"><a th:href="${link.getUrl()}" th:text="${link.getTitle()}" target="_blank"></a></li>
+      </ul>
+    </div>
+  </div>
+</article>
+<footer th:include="home/footer::footer">
+</footer>
+</body>
+</html>

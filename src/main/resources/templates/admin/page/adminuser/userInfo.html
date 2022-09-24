@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<title>个人资料</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" th:href="@{/static/layui/css/layui.css}" media="all" />
+	<link rel="stylesheet" th:href="@{/static/css/user.css}" media="all" />
+
+</head>
+<body class="childrenBody">
+	<form class="layui-form">
+		<div class="user_left">
+			<div class="layui-form-item">
+			    <label class="layui-form-label">用户名</label>
+			    <div class="layui-input-block">
+					<input type="hidden" name="userId" th:value="${userinfo.getUserId()}">
+			    	<input type="text"  th:value="${userinfo.getUsername()}" disabled class="layui-input layui-disabled">
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">用户组</label>
+			    <div class="layui-input-block">
+			    	<span th:if="${userinfo.getRole().size()!=0}" th:each="role:${userinfo.getRole()}"  th:text="${role.getName()}"></span>
+					<span th:if="${userinfo.getRole().size()==0}" th:text="${userinfo.getIsVip()==1?'超级会员':'普通用户'}"></span>
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">真实姓名</label>
+			    <div class="layui-input-block">
+			    	<input type="text" th:value="${userinfo.getName()}" name="name" placeholder="请输入真实姓名" lay-verify="required" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-form-item" pane="">
+			    <label class="layui-form-label">性别</label>
+			    <div class="layui-input-block">
+			    	<input type="radio"  name="sex" value="男" title="男" th:checked="${userinfo.getSex()=='男'}">
+	     			<input type="radio"  name="sex" value="女" title="女" th:checked="${userinfo.getSex()=='女'}">
+	     			<input type="radio"  name="sex" value="不明" title="不明" th:checked="${userinfo.getSex()=='不明'}">
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">手机号码</label>
+			    <div class="layui-input-block">
+			    	<input type="tel" name="phone" th:value="${userinfo.getPhone()}" placeholder="请输入手机号码" lay-verify="required|phone" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">出生年月</label>
+			    <div class="layui-input-block">
+			    	<input type="text" id="test1" name="Birthday"  th:value="${userinfo.getBirthday()}" placeholder="请输入出生年月"  class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">家庭住址</label>
+			    <div class="layui-input-inline">
+	                <select name="Province" lay-filter="Province">
+	                    <option th:selected="${userinfo.getProvince()!=''}" th:text="${userinfo.getProvince()}==''?'请选择省':${userinfo.getProvince()}" th:value="${userinfo.getProvince()}">请选择省</option>
+	                </select>
+	            </div>
+	            <div class="layui-input-inline">
+	                <select name="city" lay-filter="city" disabled>
+	                    <option th:selected="${userinfo.getCity()!=''}" th:text="${userinfo.getCity()}==''?'请选择市':${userinfo.getCity()}" th:value="${userinfo.getCity()}">请选择市</option>
+	                </select>
+	            </div>
+	            <div class="layui-input-inline">
+	                <select name="area" lay-filter="area" disabled>
+	                    <option th:selected="${userinfo.getArea()!=''}" th:text="${userinfo.getArea()}==''?'请选择县/区':${userinfo.getArea()}" th:value="${userinfo.getArea()}">请选择县/区</option>
+	                </select>
+	            </div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">兴趣爱好</label>
+			    <div class="layui-input-block">
+			    	<input type="checkbox" th:each="tag:${tags}" name="hobby" th:checked="${#lists.contains(UserTags,tag.getTagId())}" th:value="${tag.getTagId()}" th:title="${tag.getTitle()}">
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">邮箱</label>
+			    <div class="layui-input-block">
+			    	<input type="text" disabled="true" th:value="${userinfo.getEmail()}" placeholder="请输入邮箱" lay-verify="required|email" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">个性签名</label>
+			    <div class="layui-input-block">
+			    	<textarea placeholder="请输入内容" name="context" th:text="${userinfo.getContext()}" class="layui-textarea"></textarea>
+			    </div>
+			</div>
+		</div>
+		<div class="user_right">
+			<img th:src="${userinfo.getLogo()}" class="layui-circle" id="userFace">
+			<button type="button" onclick="show_upload()" class="layui-btn" >修改上传</button>
+		</div>
+		<div class="layui-form-item" style="margin-left: 5%;">
+		    <div class="layui-input-block">
+		    	<button class="layui-btn"  lay-submit lay-filter="chang">提交修改</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		    </div>
+		</div>
+	</form>
+
+	<script th:src="@{/static/js/laydate.js}"></script>
+	<script type="text/javascript" th:src="@{/static/js/address.js}"></script>
+	<script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
+	<!--<script type="text/javascript" src="/js/user.js"></script>-->
+	<script type="text/javascript" th:src="@{/static/js/jquery.min.js}"></script>
+	<script th:inline="javascript" type="text/javascript">
+        var areaData = address;
+        var $form;
+        var form;
+
+      function callimgurl(url){
+           $("#userFace").attr("src",url);
+          window.parent.callimgurl(url);
+	  }//回调修改头像
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#test1' //指定元素
+        });
+        layui.use(['form','layer','upload'], function() {
+            form = layui.form();
+            var layer = parent.layer === undefined ? layui.layer : parent.layer;
+            $form = $('form');
+            form.on("submit(chang)", function (data) {
+
+
+                var quotation = new Array();
+                $("input:checkbox[name='hobby']:checked").each(function(){
+                    quotation.push($(this).val());
+                });
+                var json = {};
+                for (var i = 0; i < quotation.length; i++) {
+                    json[i] = quotation[i];
+                }
+                let myJson = JSON.stringify(json);
+                data.field.hobby =  myJson ;
+                console.log(data.field);
+                $.ajax({
+                    url: '/admin/administrators/infoinsert',
+                    method: 'post',
+                    data:data.field,
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.code == 200) {
+                            layer.msg(data.msg)
+                            x_admin_close()
+                        } else {
+                            layer.msg("修改失败");
+                            x_admin_close()
+                        }
+                    }, error: function (data) {
+                        layer.msg("修改失败")
+                        x_admin_close()
+                    }
+                });
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+            loadProvince();
+        })
+
+        function show_upload(url){
+            layer.open({
+                type: 2,
+                shade: false,
+                area: ['650px','630px'],
+                maxmin: true,
+				title:'头像上传',
+                content: '/admin/administrators/logoupload?url='+[[${userinfo.getLogo()}]],
+                success: function(layero){
+                    // layer.setTop(layero); //重点2
+                }
+            });
+		}
+        //加载省数据
+        function loadProvince() {
+            var proHtml = '';
+            for (var i = 0; i < areaData.length; i++) {
+                proHtml += '<option id="aa'+i+'"  value="' + areaData[i].provinceCode + '_' + areaData[i].mallCityList.length + '_' + i +'_'+areaData[i].provinceName+ '">' + areaData[i].provinceName + '</option>';
+            }
+            //初始化省数据
+            $form.find('select[name=Province]').append(proHtml);
+            form.render();
+            form.on('select(Province)', function(data) {
+                $form.find('select[name=area]').html('<option value="">请选择县/区</option>');
+                var value = data.value;
+                var d = value.split('_');
+                var code = d[0];
+                var count = d[1];
+                var index = d[2];
+               var vv="#aa"+index;
+                $(vv).attr("value", d[3]);
+                if (count > 0) {
+                    loadCity(areaData[index].mallCityList);
+                } else {
+                    $form.find('select[name=city]').attr("disabled","disabled");
+                }
+            });
+        }
+        //加载市数据
+        function loadCity(citys) {
+            var cityHtml = '<option value="">请选择市</option>';
+            for (var i = 0; i < citys.length; i++) {
+                cityHtml += '<option id="cc'+i+'" value="' + citys[i].cityCode + '_' + citys[i].mallAreaList.length + '_' + i + '_'+citys[i].cityName+'">' + citys[i].cityName + '</option>';
+            }
+            $form.find('select[name=city]').html(cityHtml).removeAttr("disabled");
+            form.render();
+            form.on('select(city)', function(data) {
+                var value = data.value;//获取选中的内容 然后遍历下一个
+                var d = value.split('_');
+                var code = d[0];
+                var count = d[1];
+                var index = d[2];
+                var ss="#cc"+index;//读取id然后重新给此id赋值 值为第4个
+                $(ss).attr("value", d[3]);
+                if (count > 0) {
+                    loadArea(citys[index].mallAreaList);
+                } else {
+                    $form.find('select[name=area]').attr("disabled","disabled");
+                }
+            });
+        }
+        //加载县/区数据
+        function loadArea(areas) {
+            var areaHtml = '<option value="">请选择县/区</option>';
+            for (var i = 0; i < areas.length; i++) {
+                areaHtml += '<option value="' +  areas[i].areaName + '">' + areas[i].areaName + '</option>';
+            }
+            $form.find('select[name=area]').html(areaHtml).removeAttr("disabled");
+            form.render();
+            form.on('select(area)', function(data) {
+                //console.log(data);
+            });
+        }
+
+        function x_admin_close(){
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+        }
+
+        function msge(data) {
+            layui.use('layer', function() {
+                var layer = layui.layer;
+                layer.msg(data);
+            })
+        }
+	</script>
+</body>
+
+</html>

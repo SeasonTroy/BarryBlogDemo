@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的博客</title>
+    <link rel="stylesheet" th:href="@{/static/lib/layui/css/layui.css}">
+    <script th:src="@{/static/js/jquery.mins.js}" ></script>
+    <script type="text/javascript" th:src="@{/static/lib/layui/layui.js}" charset="utf-8"></script>
+</head>
+<body style="background:#ffffff">
+<style>
+    *{
+        list-style:none;
+    }
+    .ap{
+        width:100%;
+    }
+    .ap ul li{
+        width:95%; margin:0 auto;
+        height:90px; border-bottom:#a5a5a4 1px solid;
+    }
+    .ap ul li dl dt{color:#a5a5a4;float:Left; margin-right:15px;}
+
+    .tit{color:#8e8d8c}
+    .tit:hover{color:#3a3939}
+</style>
+
+    <div th:inline="text" class="ap layui-form">
+        <ul>
+            <li th:each="art:${article}">
+                <div class="tit" style="font-size:18px;  height:40px; line-height:60px;"><a th:href="'/articleEdit?id='+${art.getArId()}">[[${art.getTitle()}]]</a></div>
+                <div style="height:40px; line-height: 55px;">
+                    <div style="width:50%; float:left">
+                        <dl>
+                            <dt>[[${#temporals.format(art.getCreatetime(),'yyyy-MM-dd a HH:mm:ss')}]]</dt>
+                            <dt>阅读量：[[${art.getClickcount()}]]</dt>
+                            <dt>评论：[[${art.getPingluncount()}]]</dt>
+                        </dl>
+                    </div>
+                    <div style="width:50%; float:right;">
+                        <dl>
+                            <dt><a th:href="'/articleEdit?id='+${art.getArId()}"><span class="layui-badge layui-bg-orange">修改</span></a></dt>
+                            <dt>
+                                <span class="layui-badge layui-bg-gray">评论：</span>
+                                <input style="padding-top:-20px;" th:checked="${art.getCommentState()}==1" th:value="${art.getArId()}"  type="checkbox" lay-filter="pinglun" name="pinglun" lay-text="开启|关闭" lay-skin="switch">
+                            </dt>
+                            <dt><a th:href="|javascript:member_del(${art.getArId()})|"><span class="layui-badge">删除</span></a></dt>
+                            <dt th:switch="${art.getState()}"><span class="layui-badge layui-bg-gray">状态 ：</span>
+                                <span th:case="0"  class="layui-badge layui-bg-orange">待审核</span>
+                                <span th:case="1"  class="layui-badge layui-bg-green">审核通过</span>
+                                <span th:case="2"  class="layui-badge">审核不通过</span>
+                                <button th:case="3" th:onclick="opens([[${art.getResson()}]])"  class="layui-btn  layui-btn-danger layui-btn-xs">审核驳回 查看</button>
+                            </dt>
+                        </dl>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+
+
+        form.on("switch(pinglun)",function (data) {
+            $.ajax({
+                url:"/pl",
+                type: 'post',
+                dataType: 'json',
+                data:{id:data.elem.value,state:data.elem.checked},
+                success:function (data) {
+                    if(data.code==200){
+                        layer.msg(data.msg);
+                    }else if(data.code==500){
+                        layer.msg(data.msg);
+                    }else if(data.hashMap.code=='990'){
+                        layer.msg(data.hashMap.msg);
+                    }
+                },
+                error:function () {
+
+                }
+            });
+        })
+    });
+
+    function member_del(id){
+        layer.confirm('确认要删除吗？'+id,function(index){
+            //发异步删除数据
+            $.ajax({
+                url:"/delete",
+                method:'post',
+                dataType:'json',
+                data:{id:id},
+                success:function (data) {
+                    if(data.code==200){
+                        layer.msg("删除成功");
+                    }else if(data.code==500){
+                        layer.msg("删除失败");
+                    }else if(data.hashMap.code=='999'){
+                        layer.msg(data.hashMap.msg);
+                    }
+                },error:function () {
+                    layer.msg("网络错误");
+                }
+            })
+        });
+    }
+    function opens(resson) {
+         layer.open({
+             type: 1,
+             skin: 'layui-layer-rim', //加上边框
+             area: ['420px', '240px'], //宽高
+             content: resson
+         });
+    }
+
+
+</script>
+</body>
+</html>

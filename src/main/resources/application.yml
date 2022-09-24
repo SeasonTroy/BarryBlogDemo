@@ -1,0 +1,79 @@
+server:
+  port: 8889
+  address: 0.0.0.0
+Spring:
+  profiles:
+    active: dev #开发模式
+  thymeleaf:
+    cache: false
+    mode: LEGACYHTML5
+  devtools:
+    restart:
+      enabled: true
+  mvc:
+    pathmatch:
+      use-suffix-pattern: false #不过滤路径.后面的内容
+  cache:
+    ehcache:
+      config: classpath:config/ehcache.xml
+    type: ehcache
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 20000000
+  aop:
+    auto: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    #配置邮件相关 默认25端口
+  mail:
+    host: smtp.qq.com
+    username: 836478775@qq.com
+    password: whacbmclfnvabgaf
+    default-encoding: utf-8
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+    protocol: smtp
+    port: 465
+
+#mybatis: #mybatis配置mybatisautoconfigure
+#  configuration:
+#    map-underscore-to-camel-case: true
+#  mapper-locations: mybatis/**/*Mapper.xml
+#  typeAliasesPackage: com.bootdang.**.entity
+
+#debug: true
+mybatis-plus:
+  mapper-locations: classpath:mybatis/**/*Mapper.xml
+  type-aliases-package: com.bootdang.**.entity
+
+  global-config:
+    db-config:
+      column-format: true
+  configuration:
+    map-underscore-to-camel-case: true #开启陀螺峰
+    default-fetch-size: 1000
+#    global-config:
+#     column-underline: true
+
+logging:
+  config: classpath:logback-spring.xml
+app:
+  upload:
+    path: F:/propty/upload/
+    username: admin
+    password: admin
+    luceneIndexPath: F:/propty/upload/index
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+tv:
+  url: 'http://jx.598110.com/zuida.php?url='
+  #Https://www.ckmov.com/?url=

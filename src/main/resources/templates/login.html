@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="baidu-site-verification" content="OyUb4RVdSe" />
+    <meta name="renderer" content="webkit" />
+    <title>javaBarry博客社区</title>
+    <link rel="stylesheet" th:href="@{/static/css/style.css}">
+
+    
+
+    <style>
+        body {
+            font: 12px/1.5 "Microsoft YaHei", tahoma, arial, Hiragino Sans GB, \5b8b\4f53;
+            overflow: hidden;
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .header {
+            position: fixed;
+            width: 100%;
+            top: 20px;
+            left: 0px;
+            z-index: 999;
+        }
+
+        .nav {
+            width: 80%;
+            height: 30px;
+            line-height: 30px;
+            margin: 0 auto;
+        }
+
+
+        .logo {
+            float: left;
+            background-image: url(/static/images/b.png);
+            display: block;
+            width: 150px;
+            height: 50px;
+            background-position: 0 0;
+            background-repeat: no-repeat;
+            background-size: 150px;
+        }
+
+        .entry {
+            float: right;
+            color: #fff;
+        }
+
+        .entry .state {
+            color: #bfbfbf;
+        }
+
+        .entry a {
+            font-size: 12px;
+            color: #fff;
+            margin: 0 5px;
+        }
+
+        .entry a:hover {
+            color: #00bbee;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+        }
+
+        .content {
+            width: 1200px;
+            height: 100%;
+            margin: 0 auto;;
+        }
+
+        .wrap {
+            position: absolute;
+            left: 0;
+            top: 35%;
+            width: 100%;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .slogan {
+            width: 600px;
+            height: 200px;
+            background: url(/static/images/ss.png) no-repeat 0 0;
+            display: inline-block;
+            background-size: 600px;
+        }
+
+        .mid {
+            width: 100%;
+        }
+
+        .main-entry {
+            width:360px;
+            height: 50px;
+            margin: 15px auto 0;
+        }
+
+        .main-entry a {
+            display: block;
+            text-decoration: none;
+            float: left;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            letter-spacing: 1px;
+            height: 50px;
+            width: 170px;
+            color: #ffffff;
+            line-height: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-entry a .title {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            padding-left: 18px;
+        }
+
+        .main-entry a .title i {
+            position: absolute;
+            left: 20px;
+            top: 14px;
+            background: url(/static/images/yh.png) no-repeat 0 0;
+            display: block;
+            width: 24px;
+            height: 24px;
+            background-size: 24px;
+        }
+
+
+        .main-entry a .title .developer {
+            background-image: url(/static/images/gl.png);
+        }
+
+        .main-entry s {
+            background-color: #00a3ee;
+            opacity: .9;
+            display: block;
+            border-radius: 8px;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+        }
+
+        .main-entry a:hover s {
+            background-color: #00aaee;
+            opacity: 1;
+        }
+
+        a.personal-login,
+        a.seller-login
+        {
+            margin-left: 20px;
+            transition: all .3s ease-in-out;
+            -webkit-transition: all .3s ease-in-out;
+            -moz-transition: all .3s ease-in-out;
+            -o-transition: all .3s ease-in-out;
+        }
+
+
+
+        a.seller-login:hover .title{
+            display: none;
+        }
+
+
+
+
+        .alipay-app img {
+            width: 60px;
+            height: 60px;
+        }
+
+        .alipay-app p {
+            line-height: 30px;
+            height: 30px;
+            color: #ffffff;
+            margin: 5px 0 10px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            left: 0px;
+            width: 100%;
+            background-color: white;
+            z-index: 99;
+        }
+
+
+        .footer ul {
+            padding-left: 5px;
+        }
+
+        .footer li {
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .footer li a {
+            color: #666;
+        }
+
+    </style>
+
+</head>
+<body>
+<div class="bg"></div>
+<div class="mask"></div>
+<div class="main">
+    <div class="header">
+        <div class="nav">
+            <div class="logo"></div>
+            <div class="entry">
+
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="content">
+            <div class="wrap">
+                <div class="slogan"></div>
+                <div class="mid">
+                    <div  class="main-entry">
+                        <a href="/admin/login"  class="developer-login"><span class="title"><i
+                                class="developer"></i>我是开发者</span><s></s></a>
+                        <a href="javascript:;" class="personal-login"><span class="title"><i
+                                class="personal"></i>我是个人用户</span><s></s></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<div style="text-align: center; position: absolute;  z-index: 199; font-size:20px; color:red;" th:text="${msg}"></div>
+
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:include="home/head::head">
+
+</head>
+<link rel="stylesheet" type="text/css" th:href="@{/homestatic/css/style.css}">
+<style>
+  .container{
+
+   float:left;
+    width: 850px;
+  }
+  .commentbox{
+    width: 850px;
+  }
+  .mytextarea {
+    width: 100%;
+    overflow: auto;
+    word-break: break-all;
+    height: 100px;
+    color: #000;
+    font-size: 14px;
+    resize: none;
+  }
+  .comment-list{
+
+    width: 850px;
+    margin: 30px auto;
+    clear: both;
+    padding-top: 20px;
+  }
+  .comment-list .comment-info{
+
+    position: relative;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #ccc;
+  }
+  .comment-list .comment-info .logo{
+
+    width: 10%;
+    position: absolute;
+  }
+  .comment-list .comment-info .logo img{
+    -webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;
+    width: 100%;
+    border-radius: 50%;
+    padding:15px;
+  }
+  .comment-list .comment-info .comment-right{
+    padding:10px 0px 10px 11%;
+  }
+  .comment-list .comment-info .comment-right h3{
+    margin: 20px 0px;
+  }
+  .comment-list .comment-info .comment-right .comment-content-header{
+    height: 25px;
+  }
+  .comment-list .comment-info .comment-right .comment-content-header span,.comment-list .comment-info .comment-right .comment-content-footer span{
+    padding-right: 5em;
+    color: #aaa;
+  }
+  .comment-list .comment-info .comment-right .comment-content-header span,.comment-list .comment-info .comment-right .comment-content-footer span.reply-btn,.send,.reply-list-btn{
+    margin-top:10px;
+    cursor: pointer;
+  }
+  .comment-list .comment-info .comment-right .reply-list {
+    border-left: 3px solid #ccc;
+    padding-left: 7px;
+  }
+  .comment-list .comment-info .comment-right .reply-list .reply{
+    border-bottom: 1px dashed #ccc;
+  }
+  .comment-list .comment-info .comment-right .reply-list .reply div span{
+    padding-left: 10px;
+  }
+  .comment-list .comment-info .comment-right .reply-list .reply p span{
+    padding-right: 2em;
+    color: #aaa;
+  }
+</style>
+<body>
+<!--top begin-->
+<header th:include="home/head::listheader" id="header">
+
+</header>
+
+<!--top end-->
+<article th:inline="text">
+  <!--lbox begin-->
+  <div class="lbox">
+    <div class="content_box whitebg">
+      <h2 class="htitle"><span class="con_nav">所属栏目：<a href="/">[[${article.getArttype().getTitle()}]]</a></span>文章详情</h2>
+      <h1 class="con_tilte" th:text="${article.getTitle()}"></h1>
+      <p class="bloginfo"><i th:class="${article.getUser().getIsVip()==1?'avatar':''}"><img th:src="${article.getUser().getLogo()}"></i><span th:text="${article.getUser().getName()}"></span><span th:text="${#temporals.format(article.getCreatetime(),'yyyy-MM-dd a HH:mm ')}"></span><span>【<a href="/">程序人生</a>】</span><span th:text="${article.getClickcount()}+'人已围观'"></span></p>
+      <div class="con_info"><b>简介</b>[(${article.getDescription()})]</div>
+      <div class="con_text">
+        <p th:if="${article.getType()!=2}" th:utext="${article.getContext()}"></p>
+        <div th:if="${article.getType()!=1}">
+          <button th:if="${article.getIsFree()==1}" disabled class="layui-btn  layui-btn-warm">免费</button>
+          <button id="viptib" th:if="${article.getIsFree()!=1}" disabled class="layui-btn layui-btn-warm">所需[[${article.getJf()}]]积分</button>
+          <button th:onclick="|download(${article.getArId()})|" type="button" class="layui-btn">
+            <i  class="layui-icon">&#xe601;</i> 下载
+          </button>
+          <span style="float:right;margin-top:10px;" class="layui-badge">开通永久vip免费下载</span>
+        </div>
+        <p class="share"><b>注意：</b>感谢您对java攀登博客网站平台的认可，以及对我们原创作品以及文章的青睐，非常欢迎各位朋友分享到个人站长或者朋友圈，但转载请说明文章出处“来源java攀登博客”。</p>
+
+        <!--点赞开始-->
+          <div id="container">
+            <div class="feed" id="feed2">
+              <div class="heart"  id="like" rel="like"></div> <div class="likeCount" id="likeCount">[[${fabulouscount}]]</div>
+              <span style="margin-left:30px; font-size:14px;">赞</span>
+            </div>
+          </div>
+
+        <div class="nextinfo">
+          <p >上一篇：
+            <a th:if="${leftid!=null}" th:text="${leftid.getTitle()}" th:href="'/info/'+${leftid.getArId()}"></a>
+            <span style=" pointer-events: none;cursor: default;opacity: 0.6;" th:if="${leftid==null}"  >没有咯</span>
+          </p>
+          <p>下一篇：
+            <a th:if="${nextid!=null}" th:text="${nextid.getTitle()}" th:href="'/info/'+${nextid.getArId()}"></a>
+            <span th:if="${nextid==null}" style=" pointer-events: none;cursor: default;opacity: 0.6;" >没有咯</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div th:if="${article.getCommentState()}==1" class="whitebg gbook">
+      <h2 class="htitle">文章评论</h2>
+      <div class="container">
+        <div class="commentbox">
+          <textarea  cols="80" rows="50" style="padding: 10px;" placeholder="来说几句吧......" class="mytextarea" id="content"></textarea>
+          <div style="margin-top:10px;" class="btn btn-info pull-right" id="comment">
+           <button class="layui-btn">评论</button>
+          </div>
+        </div>
+        <div class="comment-list">
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!--lbox end-->
+  <div class="rbox">
+    <div th:include="home/head::right">
+
+    </div>
+
+
+
+  </div>
+</article>
+
+<footer th:include="home/footer::footer">
+</footer>
+</body>
+<script th:inline="javascript">
+    var chname=[[${session.User==null?'未登录':session.User.getName()}]];
+    var thisarticle=[[${article.getArId()}]];
+</script>
+<script type="text/javascript" th:inline="javascript" th:src="@{/homestatic/js/jquery.comment.js}" ></script>
+<script type="text/javascript"  th:src="@{/homestatic/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    var layedit;
+    var index;
+    layui.use(["layer",'layedit'],function () {
+        var layer=layui.layer;
+            layedit = layui.layedit;
+            index = layedit.build('content',{
+            height: 120,
+            tool: [
+            'strong' //加粗
+            ,'italic' //斜体
+            ,'underline' //下划线
+            ,'del' //删除线
+            ,'|' //分割线
+            ,'left' //左对齐
+            ,'center' //居中对齐
+            ,'right' //右对齐
+            ,'face' //表情
+        ]
+        }); //建立编辑器
+
+        layer.tips('开通vip获取永久免费下载资格', '#viptib');
+    })
+    //初始化数据
+
+    $.ajax({
+        url:'/pinglun/'+[[${article.getArId()}]],
+        method:'get',
+        dataType:'json',
+        success:function (datac) {
+
+            $(function(){
+                $(".comment-list").addCommentList({data:datac,add:""});
+                $("#comment").click(function(){
+                    layedit.sync(index);
+                    var obj = new Object();
+
+                    obj.context=$("#content").val();
+                    obj.createtime=getNowDateFormat();
+                    obj.replyBody="";
+                    var log=new Object();
+                    log.logo=[[${session.User==null?'未登录':session.User.getLogo()}]]
+                    log.name=chname;
+                    obj.user=log;
+                    if(log.logo=='未登录'&&chname=='未登录'){
+                        layer.msg("请先登录");
+                        return;
+                    };
+                    if($("#content").val()==''){
+                        layer.msg("内容不能为空");
+                        return;
+                    }
+                    ajaxinsert($("#content").val());
+
+                    $(".comment-list").addCommentList({data:[],add:obj});
+                });
+
+            })
+        }
+    })
+    function ajaxinsert(context) {
+        $.ajax({
+            url: '/pingluninsert',
+            method: 'post',
+            dataType: 'json',
+            data: {articleid: [[${article.getArId()}]], context: context},
+            success: function (data) {
+                if (data.code == 200) {
+                    layer.msg(data.msg)
+                } else if (data.code == 500) {
+                    layer.msg(data.msg)
+                } else if (data.hashMap.code == '990') {
+                    layer.msg(data.hashMap.msg)
+                }
+            }
+        })
+    }
+/*点赞js*/
+    $(document).ready(function()
+    {
+        if([[${one!=null}]]){
+           $("#like").addClass("heartAnimation").attr("rel","unlike");
+        }//初始化赞效果
+        $('body').on("click",'.heart',function()
+        {
+            var C=parseInt($("#likeCount").html());
+            $(this).css("background-position","")
+            var D=$(this).attr("rel");
+            if(D === 'like')
+            {
+                var _this=$(this);
+                $.ajax({
+                    url: '/fabulous',
+                    method: 'post',
+                    data: {articleid: [[${article.getArId()}]]},
+                    success: function (data) {
+                        if(data.code==200){
+                            $("#likeCount").html(C+1);
+                            _this.addClass("heartAnimation").attr("rel","unlike");
+                        } else if (data.hashMap.code == '990') {
+                            layer.msg(data.hashMap.msg)
+                        }
+
+                    }
+                })
+
+            }
+            else
+            {
+                var _this=$(this);
+                $.ajax({
+                    url: '/fabulous',
+                    method: 'post',
+                    data: {articleid: [[${article.getArId()}]]},
+                    success: function (data) {
+                        if(data.code==200) {
+                            $("#likeCount").html(C - 1);
+                            _this.removeClass("heartAnimation").attr("rel", "like");
+                            _this.css("background-position", "left");
+                        }else if (data.hashMap.code == '990') {
+                            layer.msg(data.hashMap.msg)
+                        }
+                    }
+                })
+
+            }
+        });
+    });
+   //下载
+    function download(arid) {
+        if([[${session.User==null}]]){
+           layer.msg("请先登陆");
+        }else{
+            layer.msg('确定下载吗？', {
+                time: 0 //不自动关闭
+                ,btn: ['下载', '取消']
+                ,yes: function(index){
+                    layer.close(index);
+                    $.ajax({
+                        url:'/download',
+                        method:'get',
+                        dataType:'json',
+                        data:{id:arid},
+                        success:function (data) {
+                            if (data.code == 200) {
+                                layer.open({
+                                    type: 1,
+                                    area:['auto'],
+                                    shade: false,
+                                    title: false, //不显示标题
+                                    content:"<div style='padding:20px;'><div>下载地址："+"<a style='color:red;' href='"+data.zyurl+"'>"+data.zyurl+"</a>"+"</div>" +
+                                            "<div>下载密码："+"<font color='red'>"+data.pass+"</font>"+"</div></div>"
+                                });
+                            } else if (data.code == 500) {
+                                layer.msg(data.msg)
+                            } else if (data.hashMap.code == '990') {
+                                layer.msg(data.hashMap.msg)
+                            }
+                        }
+                        
+                    })
+                   /* layer.msg('雅蠛蝶 O.o', {
+                        icon: 6
+                        ,btn: ['嗷','嗷','嗷']
+                    });*/
+                }
+            });
+        }
+       
+    }
+</script>
+
+</html>

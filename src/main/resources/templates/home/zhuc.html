@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" th:href="@{/homestatic/css/bootstrap.min.css}">
+		<link rel="stylesheet" th:href="@{/homestatic/css/login.css}" />
+		<link rel="stylesheet" th:href="@{/static/lib/layui/css/layui.css}"/>
+		<script th:src="@{/static/js/jquery.min.js}"></script>
+		<script th:src="@{/homestatic/js/bootstrap.min.js}"></script>
+
+		<script>
+			$(document).ready(function() {
+				//打开会员注册
+					$("#login_container").hide();
+					$("#_close").show();
+					$("#_start").animate({
+						left: '350px',
+						height: '520px',
+						width: '400px'
+					}, 500, function() {
+						$("#regist_container").show(500);
+						$("#_close").animate({
+							height: '40px',
+							width: '40px'
+						}, 500);
+					});
+			});
+		</script>
+
+
+	</head>
+
+	<body >
+		<div id='_start'>
+			<!-- 会员注册 -->
+			<form class="layui-form">
+			<div id='regist_container' style="display: none;">
+				<div id="lab1">
+					<span id="lab_login">会员注册</span>
+				</div>
+				<div id="form_container2" style="padding-top: 25px;">
+					<input type="text" name="username" lay-verify="name" class="form-control"  style="-webkit-box-shadow:
+0 0 0 1000px #ffffff inset; "  placeholder="用户名" id="regist_account"/>
+					<input type="password" lay-verify="pass" style="-webkit-box-shadow:
+0 0 0 1000px #ffffff inset; "  id="pass" name="password" class="form-control"  placeholder="密码" />
+					<input type="password" lay-verify="xpass"  id="xpass" name="xpassword" class="form-control" style="background:#ffffff;" placeholder="确认密码" />
+					<input type="email" lay-verify="email"  name="email" class="form-control" placeholder="邮箱" id="regist_phone" />
+					<input type="text" lay-verify="yzm" name="yzm" class="form-control" placeholder="验证码" id="regist_vcode" />
+					<!--<button id="getVCode" type="button" class="btn btn-success" >获取验证码</button>-->
+					<input id="getVCode" type="button" class="btn btn-success" value="点击发送验证码" onclick="sendCode(this)" />
+
+				</div>
+				<input type="button" lay-submit lay-filter="zhuc" value="注册" class="layui-btn btn-success" id="regist_btn" />
+			</div>
+			</form>
+		</div>
+
+	</body>
+
+	<script type="text/javascript">
+
+        $('#btnSendCode').bind('click', function () {
+
+        })
+
+
+		var clock = '';
+		var nums =60;
+		var btn;
+		function sendCode(thisBtn) {
+
+            if(!$("#regist_phone").val().match(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/)){
+                layer.msg("邮箱不正确")
+                $("#regist_phone").focus();
+            }else {
+
+                btn = thisBtn;
+                btn.disabled = true; //将按钮置为不可点击
+                btn.value = '重新获取（'+nums+'）';
+                clock = setInterval(doLoop, 1000); //一秒执行一次
+                var ema=$("#regist_phone").val();
+                $.ajax({
+                    url:'/admin/sendEmail/账号注册',
+                    method:'post',
+                    dataType:'json',
+                    data:{email:ema},
+                    success:function (data) {
+                        if(data.code==200){
+                            layer.msg(data.msg)
+                        }else{
+                            layer.msg(data.msg)
+                            clearInterval(clock)
+                            btn.disabled = false;
+                            btn.value = '点击发送验证码';
+                            nums = 60; //重置时间
+                        }
+                    },error:function (data) {
+                        layer.msg("网络错误");
+                        clearInterval(clock)
+                        btn.disabled = false;
+                        btn.value = '点击发送验证码';
+                        nums = 60; //重置时间
+                    }
+                })
+            }
+
+		}
+		function doLoop() {
+			nums--;
+			if (nums > 0) {
+				btn.value = '重新获取（'+nums+'）';
+			} else {
+				clearInterval(clock); //清除js定时器
+				btn.disabled = false;
+				btn.value = '点击发送验证码';
+				nums = 60; //重置时间，发送验证码后，60s才能再发送
+			}
+		}
+		
+		$(document).ready(function(){
+			$("#login_QQ").click(function(){
+				alert("暂停使用！");
+			});
+			$("#login_WB").click(function(){
+				alert("暂停使用！");
+			});
+		});
+	</script>
+
+	<script th:src="@{/static/lib/layui/layui.js}"></script>
+
+	<script>
+        layui.use(['form','layer'],function () {
+            var form=layui.form,layer=layui.layer;
+            form.verify({
+                name: function(value){
+                    if(value.length < 5){
+                        return '账号至少得5个字符';
+                    }
+                }
+                ,pass: [
+                    /^[\S]{5,12}$/
+                    ,'密码必须5到12位，且不能出现空格'
+                ],xpass: function(){
+                    if($('#pass').val()!=$('#xpass').val()){
+                        return '两次密码不一致';
+                    }
+                },yzm:function (value) {
+                    if(value.length != 4){
+                        return '验证码必须为4位';
+                    }
+                }
+            });
+
+            form.on('submit(zhuc)',function (data) {
+                $.ajax({
+					url:'/home/zhuc',
+					method:'post',
+					dataType:'json',
+					data:data.field,
+					success:function (data) {
+						if(data.code==200){
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+						    parent.layer.msg(data.msg);
+						}else if(data.code==500){
+                            layer.msg(data.msg);
+						}
+                    }
+				})
+                console.log(data)
+            })
+        })
+	</script>
+</html>

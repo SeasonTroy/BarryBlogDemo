@@ -1,0 +1,247 @@
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:fragment="head">
+    <meta charset="utf-8">
+    <title>javaBarry博客社区【[[${article!=null?article.getTitle():artt!=null?artt.getTitle():'首页'}]]】</title>
+    <meta name="keywords" th:content="${application.systemparam.getKeyword()}" />
+    <meta name="description" th:content="${application.systemparam.getDescription()}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/static/lib/layui/css/layui.css}">
+    <link th:href="@{/homestatic/css/base.css}" rel="stylesheet">
+    <link  th:href="@{/homestatic/css/m.css}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css"  th:href="@{/homestatic/template/ue-content/templates/images/ue_grid.css}" />
+    <link rel="stylesheet" type="text/css"  th:href="@{/homestatic/template/ue-content/templates/images/style.css}" />
+    <link rel="stylesheet" type="text/css"  th:href="@{/homestatic/template/ue-content/templates/css/style.css}" />
+
+       <script th:src="@{/static/js/jquery.mins.js}" ></script>
+    <script th:src="@{/homestatic/js/comm.js}"></script>
+    <script th:src="@{/homestatic/js/modernizr.js}"></script>
+
+    <script type="text/javascript" th:src="@{/static/lib/layui/layui.js}" charset="utf-8"></script>
+
+    <script language="javascript" th:src="@{/homestatic/script/jquery.easing.min.js}"></script>
+    <script language="javascript" th:src="@{/homestatic/script/custom.js}"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            var nav=$("#header"); //得到导航对象
+            var win=$(window); //得到窗口对象
+            var sc=$(document);//得到document文档对象。
+            win.scroll(function(){
+                if(sc.scrollTop()>=100){
+                    nav.addClass("fixednav");
+                }else{
+                    nav.removeClass("fixednav");
+                }
+            })
+        })
+    </script>
+    <style>
+        .fixednav {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+         z-index:99999;
+        }
+    </style>
+</head>
+
+<header th:fragment="listheader" id="header">
+
+    <div class="navboxx">
+        <h2 id="mnavh"><span class="navicon"></span></h2>
+        <div class="logo"><a th:text="${application.systemparam.getTitle()}" href="/"></a></div>
+        <nav style="font-size:16px;">
+            <ul id="starlist">
+                <li  th:each="arttype:${listArttype}"> <!--z这个arttype属性一般从对应controller层拿数据，从AdviceControllerArttype.java中拿 -->
+                    <a th:text="${arttype.getTitle()}" th:title="${arttype.getDescription()}" th:href="${arttype.getUrl()=='/'?'':arttype.getUrl()}+'/'+${arttype.getUrl()=='/'?'':arttype.getActtypeId()}"></a>
+                </li>
+
+            </ul>
+        </nav>
+
+        <div class="searchxx"  style="float:left;   margin-left:150px; margin-top:8px;">
+            <form   class="layui-form" method="post" th:action="${tv==null}?'/serach':'/tvserach'" >
+                <div  class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="text" th:value="${serach!=null?serach:''}" name="serach" style="width:200px;background:#eeeeee" required  lay-verify="required" placeholder="请输入关键字" autocomplete="off" class="layui-input" id="searchInput" >
+                    </div>
+                    <div style="width:100px" class="layui-input-block">
+                        <button class="layui-btn " style="background:#393D49" lay-submit lay-filter="formDemo"> <i class="layui-icon">&#xe615;</i>搜索</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <shiro:user>
+            <div title="个人中心" class="zx" style="float:left;position:relative; height:80px;  margin-top:10px;" >
+                <a href="/usercore"><div style="float:left"><img style="width:35px; height:35px; border-radius: 35px;" th:src="${session.User.getLogo()}" class="layui-nav-img"></div>
+                <div style="width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;float:left;padding-top:5px;color:#ff2942" th:title="${session.User.getName()}"><span ><shiro:principal property="name"/></span></div>
+                </a>
+
+                <div class="cs" style="position:absolute; text-align:center; height:100px; border-radius:5px; margin-top:40px; width:100px; background:#ffffff;">
+                    <dl >
+                        <dd><a href="/usercore">个人中心</a></dd>
+                        <dd><a href="javascript:;">账号设置</a></dd>
+                        <dd><a href="/logout">退出</a></dd>
+                    </dl>
+                </div>
+           <style>
+
+               .cs dl dd{
+                   font-size:14px;
+                   padding-top:8px;
+                   color:#646464;
+               }
+
+               .cs dl dd:hover{
+                   color:#2E2D3C;
+               }
+               .cs{
+                   display:none;
+               }
+               .zx:hover .cs{
+                   display:block;
+               }
+           </style>
+
+            </div>
+        </shiro:user>
+
+        <shiro:guest>
+        <div style="float:right; margin-top:10px;" class="login fr">
+            <ul>
+                <li class="openlogin"><a href="" onclick="return false;">登录</a></li>
+                <li class="reg"><a href="javascript:zhuc()" >注册</a></li>
+            </ul>
+        </div>
+        <div class="clear"></div>
+        <div class="loginmask"></div>
+        <div id="loginalert">
+            <div class="pd20 loginpd">
+                <h3><i class="closealert fr"></i>
+                    <div class="clear"></div>
+                </h3>
+                <div class="loginwrap">
+                    <div class="loginh">
+                        <div class="fl">会员登录</div>
+                        <div class="fr">还没有账号<a  href="javascript:zhuc()" >立即注册</a></div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                    <form class="layui-form" action="" id="formlogin" method="post">
+                        <div class="logininput">
+                            <input type="text" style="-webkit-box-shadow:0 0 0 1000px #ffffff inset; "  name="username"  class="loginusername" placeholder="邮箱/用户名"  />
+                            <input type="password" style="-webkit-box-shadow:0 0 0 1000px #ffffff inset; "  name="password" class="loginuserpasswordt" placeholder="密码" />
+
+                        </div>
+                        <div class="loginbtn">
+                            <div class="loginsubmit fl">
+                                <button lay-filter="sub" id="s"  lay-submit class="layui-btn" >登录</button>
+                                <div class="loginsubmiting">
+                                    <div class="loginsubmiting_inner"></div>
+                                </div>
+                            </div>
+                            <div class="logcheckbox fl">
+                                <input id="bcdl" name="checked" value="1" type="checkbox" checked="true" />
+                                记住密码</div>
+                            <div class="fr"><a href="http://www.jq22.com/">忘记密码?</a></div>
+                            <div class="clear"></div>
+                        </div>
+                    </form>
+                    <script>
+
+                        layui.use(['form','layer'],function () {
+                            var form=layui.form;
+                            form.on("submit(sub)",function (data) {
+                                $("#s").addClass('layui-btn-disabled');
+                                $("#s").attr("disabled", true);
+                                $.ajax({
+                                    url:'/home/login',
+                                    method:'post',
+                                    dataType:'json',
+                                    data:data.field,
+                                    success:function (result) {
+                                       if(result.code==200){
+                                           layer.msg(result.msg,function () {
+                                               window.location.href=document.location.href;
+                                           })
+                                       }else if(result.code==500){
+                                           layer.msg(result.msg,function () {
+                                               $("#s").removeClass('layui-btn-disabled');
+                                               $("#s").attr("disabled", false);
+                                           })
+                                       }
+                                    }
+                                })
+                                return false;
+                            })
+
+                        })
+                        function zhuc() {
+                            layer.open({
+                                type: 2,
+                                area: ['385px', '500px'],
+                                skin: 'layui-layer-rim', //加上边框
+                                content: ['/zhuc', 'no']
+                            });
+                        }
+
+                    </script>
+                </div>
+            </div>
+            <div class="thirdlogin">
+                <div class="pd50">
+                    <h4>用第三方帐号登录</h4>
+                    <ul>
+                        <li id="sinal"><a href="http://www.jq22.com/">微博账号登录</a></li>
+                        <li id="qql"><a href="http://www.jq22.com/">QQ账号登录</a></li>
+                        <!--<li id="qql"><a href="http://www.jq22.com/">github登录</a></li>-->
+                        <div class="clear"></div>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+        </shiro:guest>
+        <style>
+            .layui-input-block{
+                width: 200px;
+                float: left;
+                margin-left:0px;
+            }
+        </style>
+
+</div>
+
+</header>
+
+<div th:fragment="right">
+    <div class="whitebg paihang">
+        <h2 class="htitle">资源排行</h2>
+        <section class="topnews imgscale"><img src="/static/images/h1.jpg"><span>资源阅点击量排行</span></section>
+        <ul>
+            <li th:each="art:${application.artnozy}"><i></i><a th:href="'/info/'+${art.getArId()}">[[${art.getTitle()}]]</a></li>
+        </ul>
+    </div>
+    <div class="whitebg tuijian">
+        <h2 class="htitle">文章排行</h2>
+        <section class="topnews imgscale"><img src="/static/images/h2.jpg"><span>文章阅读量排行</span></section>
+        <ul>
+            <li th:each="artz:${application.artzy}"><a  th:href="'/info/'+${artz.getArId()}"><i><img th:src="${artz.getLitpic()}"></i>
+                <p th:text="${artz.getTitle()}"></p>
+            </a></li>
+        </ul>
+    </div>
+    <div class="ad whitebg imgscale">
+        <ul>
+            <a href="/"><img src="/homestatic/images/ad.jpg"></a>
+        </ul>
+    </div>
+    <div class="whitebg cloud">
+        <h2 class="htitle">标签云</h2>
+        <ul>
+            <a th:each="tag:${tags}" th:href="'/tag/'+${tag.getTagId()}" th:title="${tag.getTitle()}" >[[${tag.getTitle()}]]</a>
+        </ul>
+    </div>
+</div>
+

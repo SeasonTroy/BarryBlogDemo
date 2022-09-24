@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.bootdang.system.mapper.RoleMapper">
-
-
-    <select id="selectUserid" resultType="com.bootdang.system.entity.Role">
-          select r.* from sys_role r left join sys_role_user ru on r.role_id=ru.role_id where ru.user_id=#{id}
-    </select>
-</mapper>
